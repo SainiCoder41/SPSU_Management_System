@@ -1,0 +1,18 @@
+import { api } from './api.ts';
+
+export const authService = {
+  async login(credentials: { email: string; password: string }) {
+    const response = await api.post('/auth/login', credentials);
+    return response.data;
+  },
+
+  async logout() {
+    const response = await api.post('/auth/logout');
+    return response.data;
+  },
+
+  async me() {
+    const response = await api.get('/auth/me');
+    return response.data.data.user;
+  },
+};
