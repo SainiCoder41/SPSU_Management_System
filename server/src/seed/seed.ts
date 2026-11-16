@@ -6,6 +6,9 @@ import { Hostel } from '../models/Hostel.js';
 import { Staff } from '../models/Staff.js';
 import { Student } from '../models/Student.js';
 import { Parent } from '../models/Parent.js';
+import { LeaveType } from '../models/LeaveType.js';
+import { LeaveBalance } from '../models/LeaveBalance.js';
+import { LeaveRequest } from '../models/LeaveRequest.js';
 
 export const seedDatabase = async (disconnectAfter: boolean = true) => {
   try {
@@ -23,6 +26,9 @@ export const seedDatabase = async (disconnectAfter: boolean = true) => {
       Staff.deleteMany({}),
       Student.deleteMany({}),
       Parent.deleteMany({}),
+      LeaveType.deleteMany({}),
+      LeaveBalance.deleteMany({}),
+      LeaveRequest.deleteMany({}),
     ]);
 
     // 1. Create Departments
@@ -315,6 +321,146 @@ export const seedDatabase = async (disconnectAfter: boolean = true) => {
       const occ = await Student.countDocuments({ hostel: h._id });
       await Hostel.findByIdAndUpdate(h._id, { occupancy: occ });
     }
+
+    // 11. Create Leave Types & Initial Balances (v2.0 Leave Management)
+    console.log('🗓️ Creating Leave Types (v2.0 Leave Management)...');
+    const leaveTypes = await LeaveType.create([
+      {
+        name: 'Casual Leave',
+        code: 'CL',
+        applicableRole: 'ALL',
+        defaultQuota: 12,
+        requiresAttachment: false,
+        description: 'Short absence for personal, urgent or family matters',
+      },
+      {
+        name: 'Medical / Health Leave',
+        code: 'ML',
+        applicableRole: 'ALL',
+        defaultQuota: 10,
+        requiresAttachment: true,
+        description: 'Absence due to illness, hospitalization or recovery with medical certificate',
+      },
+      {
+        name: 'Home Visit / Weekend Leave',
+        code: 'HV',
+        applicableRole: 'STUDENT',
+        defaultQuota: 20,
+        requiresAttachment: false,
+        description: 'Scheduled residential student home visit approved by mentor and warden',
+      },
+      {
+        name: 'Academic / On-Duty Leave',
+        code: 'OD',
+        applicableRole: 'ALL',
+        defaultQuota: 15,
+        requiresAttachment: true,
+        description: 'Off-campus academic competitions, hackathons, seminars or conferences',
+      },
+    ]);
+
+    const clType = leaveTypes.find((lt) => lt.code === 'CL')!;
+    const hvType = leaveTypes.find((lt) => lt.code === 'HV')!;
+
+    // Create Initial Balances for student1
+    const currentYear = new Date().getFullYear();
+    for (const lt of leaveTypes) {
+      await LeaveBalance.create({
+        user: student1User._id,
+        leaveType: lt._id,
+        academicYear: currentYear,
+        totalQuota: lt.defaultQuota,
+        usedDays: lt.code === 'CL' ? 2 : 0,
+        pendingDays: lt.code === 'HV' ? 3 : 0,
+        remainingDays: lt.code === 'CL' ? lt.defaultQuota - 2 : lt.defaultQuota,
+      });
+    }
+
+    // Seed Sample Leave Requests
+    // 1. One Approved Casual Leave in past
+    const pastStart = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+    const pastEnd = new Date(Date.now() - 9 * 24 * 60 * 60 * 1000);
+    await LeaveRequest.create({
+      applicant: student1User._id,
+      applicantRole: 'STUDENT',
+      leaveType: clType._id,
+      startDate: pastStart,
+      endDate: pastEnd,
+      numberOfDays: 2,
+      reason: 'Urgent family function at hometown in Jaipur',
+      emergencyContact: '+91 94140 12345',
+      status: 'Approved',
+      currentApprover: mentorUser._id,
+      approvalHistory: [
+        {
+          approver: student1User._id,
+          role: 'STUDENT',
+          action: 'Submitted',
+          actionDate: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000),
+          comments: 'Submitted by student',
+        },
+        {
+          approver: mentorUser._id,
+          role: 'MENTOR',
+          action: 'Approved',
+          actionDate: pastStart,
+          comments: 'Approved. Informed parents.',
+        },
+      ],
+      auditTrail: [
+        {
+          actor: student1User._id,
+          action: 'LEAVE_SUBMITTED',
+          timestamp: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000),
+          previousState: 'Draft',
+          newState: 'Pending',
+          comment: 'Submitted 2 days Casual Leave',
+        },
+        {
+          actor: mentorUser._id,
+          action: 'LEAVE_APPROVED',
+          timestamp: pastStart,
+          previousState: 'Pending',
+          newState: 'Approved',
+          comment: 'Approved. Informed parents.',
+        },
+      ],
+    });
+
+    // 2. One Pending Home Visit Leave for mentor to review right now!
+    const futureStart = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+    const futureEnd = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000);
+    await LeaveRequest.create({
+      applicant: student1User._id,
+      applicantRole: 'STUDENT',
+      leaveType: hvType._id,
+      startDate: futureStart,
+      endDate: futureEnd,
+      numberOfDays: 3,
+      reason: 'Visiting home for upcoming family festival and celebrations',
+      emergencyContact: '+91 94140 12345',
+      status: 'Pending',
+      currentApprover: mentorUser._id,
+      approvalHistory: [
+        {
+          approver: student1User._id,
+          role: 'STUDENT',
+          action: 'Submitted',
+          actionDate: new Date(),
+          comments: 'Submitted by student',
+        },
+      ],
+      auditTrail: [
+        {
+          actor: student1User._id,
+          action: 'LEAVE_SUBMITTED',
+          timestamp: new Date(),
+          previousState: 'Draft',
+          newState: 'Pending',
+          comment: 'Applicant requested 3 days of Home Visit Leave',
+        },
+      ],
+    });
 
     console.log('✅ Database seeding finished successfully!');
     console.log('--------------------------------------------------');

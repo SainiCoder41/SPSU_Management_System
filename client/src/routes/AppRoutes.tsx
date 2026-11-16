@@ -16,9 +16,13 @@ import { StudentDirectory } from '../pages/admin/StudentDirectory';
 import { StaffManagement } from '../pages/admin/StaffManagement';
 import { DepartmentManagement } from '../pages/admin/DepartmentManagement';
 import { HostelManagement } from '../pages/admin/HostelManagement';
+import { LeaveManagement } from '../pages/admin/LeaveManagement';
 
 import { StudentDashboard } from '../pages/student/StudentDashboard';
 import { StudentHostelMentor } from '../pages/student/StudentHostelMentor';
+import { StudentLeaves } from '../pages/student/StudentLeaves';
+
+import { ApproverLeaveQueue } from '../pages/approver/ApproverLeaveQueue';
 
 import { FacultyDashboard } from '../pages/faculty/FacultyDashboard';
 import { MentorDashboard } from '../pages/mentor/MentorDashboard';
@@ -44,12 +48,19 @@ export const AppRoutes: React.FC = () => {
             <Route path="/admin/staff" element={<StaffManagement />} />
             <Route path="/admin/departments" element={<DepartmentManagement />} />
             <Route path="/admin/hostels" element={<HostelManagement />} />
+            <Route path="/admin/leaves" element={<LeaveManagement />} />
           </Route>
 
           {/* Student Routes */}
           <Route element={<RoleRoute allowedRoles={['STUDENT']} />}>
             <Route path="/student" element={<StudentDashboard />} />
             <Route path="/student/hostel-mentor" element={<StudentHostelMentor />} />
+            <Route path="/student/leaves" element={<StudentLeaves />} />
+          </Route>
+
+          {/* Approver Shared Routes (Mentors, Wardens, HODs, Faculty, Admin) */}
+          <Route element={<RoleRoute allowedRoles={['MENTOR', 'WARDEN', 'HOD', 'FACULTY', 'ADMIN']} />}>
+            <Route path="/approver/leaves" element={<ApproverLeaveQueue />} />
           </Route>
 
           {/* Faculty Routes */}

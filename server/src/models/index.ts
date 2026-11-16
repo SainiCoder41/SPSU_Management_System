@@ -4,3 +4,6 @@ export * from './Hostel.js';
 export * from './Staff.js';
 export * from './Student.js';
 export * from './Parent.js';
+export * from './LeaveType.js';
+export * from './LeaveBalance.js';
+export * from './LeaveRequest.js';
