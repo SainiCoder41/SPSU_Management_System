@@ -1,12 +1,12 @@
-# 🏛️ SPSU Campus Management System (v1.0 — Student Information System)
+# 🏛️ SPSU Campus Management System (v2.0 — SIS & Leave Management)
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![React](https://img.shields.io/badge/Frontend-React_18_%7C_TypeScript_%7C_Vite-61DAFB?logo=react)
 ![Node.js](https://img.shields.io/badge/Backend-Node.js_%7C_Express_%7C_TypeScript-339933?logo=nodedotjs)
 ![MongoDB](https://img.shields.io/badge/Database-MongoDB_%7C_Mongoose-47A248?logo=mongodb)
 ![Redis](https://img.shields.io/badge/Cache-Redis_with_Fallback-DC382D?logo=redis)
 
-Production-ready, multi-tenant Student Information System (SIS) foundation for **Sir Padampat Singhania University (SPSU), Udaipur** (A JK Cement Initiative).
+Production-ready, multi-tenant Campus Management System for **Sir Padampat Singhania University (SPSU), Udaipur** (A JK Cement Initiative).
 
 ---
 
@@ -16,28 +16,25 @@ Production-ready, multi-tenant Student Information System (SIS) foundation for *
 - [Official SPSU Visual Identity](#-official-spsu-visual-identity)
 - [Technology Stack](#-technology-stack)
 - [Role-Based Access Control (RBAC)](#-role-based-access-control-rbac)
-- [Key Modules & Features](#-key-modules--features)
-- [System Architecture & Data Hierarchy](#-system-architecture--data-hierarchy)
+- [Release Architecture & Modules](#-release-architecture--modules)
+  - [v1.0 — Student Information System (SIS)](#v10--student-information-system-sis)
+  - [v2.0 — Leave Management & Approval Engine](#v20--leave-management--approval-engine)
 - [API Endpoint Documentation](#-api-endpoint-documentation)
-- [Project Directory Structure](#-project-directory-structure)
-- [Environment Configuration](#-environment-configuration)
 - [Quick Start & Setup Guide](#-quick-start--setup-guide)
 - [Verification & Build Commands](#-verification--build-commands)
-- [Future System Roadmap](#-future-system-roadmap)
+- [Future System Roadmap (v3.0 - v4.0)](#-future-system-roadmap-v30---v40)
 
 ---
 
 ## 🏛️ Executive Summary
 
-Version 1.0 establishes an authoritative, centralized source for student identities, faculty records, parent accounts, academic tracking, hostel room assignments, mentor-mentee mapping, and departmental hierarchy across **7 distinct role-based access levels**.
-
-Designed specifically for **Sir Padampat Singhania University (SPSU)**, this portal streamlines administrative operations, provides secure access to academic profiles, and ensures data integrity through strong validation, audit logs, and automated database seeding.
+The SPSU Campus Management System delivers an integrated, role-guarded platform spanning:
+1. **Release v1.0 — Student Information System (SIS)**: Authoritative identity management for students, faculty records, parent accounts, academic tracking, hostel room assignments, mentor-mentee mapping, and departmental hierarchy across **7 distinct user roles**.
+2. **Release v2.0 — Leave Management & Approval Engine**: Student & staff leave applications, date-order and overlap validation, multi-stage approval routing using SIS reporting relationships, decision recording with audit trails, and annual quota balance tracking.
 
 ---
 
 ## 🎨 Official SPSU Visual Identity
-
-The UI components adhere strictly to SPSU's primary brand guidelines:
 
 | Color Element | Hex Code | Purpose / Usage |
 | :--- | :--- | :--- |
@@ -50,80 +47,39 @@ The UI components adhere strictly to SPSU's primary brand guidelines:
 
 ---
 
-## 🛠️ Technology Stack
-
-### Frontend (`/client`)
-- **Core Framework**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS (with custom SPSU brand palette config)
-- **Routing**: React Router DOM (v6) with declarative RBAC route guards
-- **Data Fetching & State**: TanStack Query (React Query v5) + Axios (with auto cookie handling)
-- **Forms & Schema Validation**: React Hook Form + Zod
-- **Icons & Animations**: Lucide React + Framer Motion
-- **Spreadsheet Operations**: SheetJS (`xlsx`) for client-side batch processing
-
-### Backend (`/server`)
-- **Runtime & Language**: Node.js + Express.js + TypeScript
-- **Database**: MongoDB with Mongoose ODM
-- **Cache Strategy**: Redis via `ioredis` with an automated in-memory fallback mechanism when Redis server is offline
-- **Authentication & Security**: JWT stored in secure HTTP-only cookies, `bcryptjs` password hashing, `helmet` header protection, CORS configuration, rate limiting
-- **File Parsing**: Multer + SheetJS (`xlsx`) for Excel/CSV student batch imports
-- **Validation**: Zod schema validation middleware
-
----
-
 ## 🔐 Role-Based Access Control (RBAC)
-
-The system supports **7 distinct user roles**. Pre-configured demo accounts can be populated via `npm run seed` in `server/`:
 
 | Role | Email | Password | Scope & Key Capabilities |
 | :--- | :--- | :--- | :--- |
-| **ADMIN** | `admin@spsu.ac.in` | `Admin@123` | Full SIS v1.0 access: Student & Staff CRUD, batch CSV/Excel import/export, mentor/warden/HOD assignments, system statistics. |
-| **STUDENT** | `student1@spsu.ac.in` | `Student@1234` | Personal profile viewing, enrollment details, academic branch & semester info, assigned mentor details, hostel room & warden contact. |
-| **FACULTY** | `faculty1@spsu.ac.in` | `Staff@1234` | Faculty dashboard, departmental assignment, student directory access. |
-| **MENTOR** | `mentor.cse@spsu.ac.in` | `Staff@1234` | Mentor dashboard, list of assigned mentees, student progress overview, contact information. |
-| **WARDEN** | `warden.bh2@spsu.ac.in` | `Staff@1234` | Warden dashboard, assigned hostel (e.g., BH2), hostel resident directory, occupancy status. |
-| **HOD** | `hod.cse@spsu.ac.in` | `Staff@1234` | Head of Department overview, departmental faculty listing, departmental student directory. |
+| **ADMIN** | `admin@spsu.ac.in` | `Admin@123` | Full CMS access: Student & Staff CRUD, batch CSV/Excel import/export, leave policies, system statistics. |
+| **STUDENT** | `student1@spsu.ac.in` | `Student@1234` | Academic profile, hostel room, assigned mentor, leave applications, remaining balances. |
+| **FACULTY** | `faculty1@spsu.ac.in` | `Staff@1234` | Faculty dashboard, departmental assignment, student directory access, leave queue. |
+| **MENTOR** | `mentor.cse@spsu.ac.in` | `Staff@1234` | Mentor dashboard, assigned mentees, mentee leave approvals queue, progress overview. |
+| **WARDEN** | `warden.bh2@spsu.ac.in` | `Staff@1234` | Warden dashboard, assigned hostel (BH2), resident directory, hostel leave approvals. |
+| **HOD** | `hod.cse@spsu.ac.in` | `Staff@1234` | Head of Department overview, faculty roster, student directory, department leave approvals. |
 | **PARENT** | `parent1@gmail.com` | `Parent@1234` | Parent portal, linked child profile overview, academic placement, hostel & mentor summary. |
 
 ---
 
-## ⚡ Key Modules & Features
+## ⚡ Release Architecture & Modules
 
-- 👤 **Student Identity Management**: Comprehensive record keeping for enrollment numbers, roll numbers, academic programs, branches, semesters, sections, CGPA, and admission years.
+### v1.0 — Student Information System (SIS)
+- 👤 **Student Identity Management**: Enrollment numbers, roll numbers, academic programs, branches, semesters, sections, CGPA, and admission years.
 - 🏢 **Hostel & Residential Allocation**: Tracking of Boys Hostels (BH1–BH4) and Girls Hostels (GH1–GH3), room numbers, and warden mappings.
-- 🧑‍🏫 **Faculty & Departmental Organization**: Management of academic departments (CSE, ECE, ME, CE), designations (Professor, Assoc. Professor, Asst. Professor), and HOD appointments.
+- 🧑‍🏫 **Faculty & Departmental Organization**: Management of academic departments (CSE, ECE, ME, CE) and HOD appointments.
 - 🤝 **Mentorship Program**: Direct 1:N mapping of faculty mentors to assigned student mentees.
-- 📊 **Bulk Excel/CSV Batch Import & Export**: Fast batch ingestion of student records with downloadable template standard and instant Excel report exports.
-- 🛡️ **Role-Guarded UI & API**: Secure frontend routing and backend middleware enforcing granular access privileges per role.
+- 📊 **Bulk Excel/CSV Batch Import & Export**: Fast batch ingestion of student records with standard template download and instant Excel exports.
 
----
-
-## 🏗️ System Architecture & Data Hierarchy
-
-```
-                               ┌───────────────────┐
-                               │    ADMIN USER     │
-                               └─────────┬─────────┘
-                                         │
-        ┌────────────────────────────────┼────────────────────────────────┐
-        ▼                                ▼                                ▼
-┌───────────────┐               ┌─────────────────┐              ┌────────────────┐
-│   DEPARTMENT  │               │     HOSTEL      │              │  STAFF PROFILE │
-│ (CSE, ECE...) │               │ (BH1-4, GH1-3)  │              │ (Faculty, HOD) │
-└───────┬───────┘               └────────┬────────┘              └───────┬────────┘
-        │                                │                               │
-        │ HOD Mapping                    │ Warden Mapping                │ Mentor Mapping
-        ▼                                ▼                               ▼
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                                STUDENT PROFILE                                  │
-│                 (Roll No, Enrollment, Branch, Sem, Hostel, Mentor)              │
-└───────────────────────────────────────┬─────────────────────────────────────────┘
-                                        │
-                                        ▼
-                               ┌──────────────────┐
-                               │  PARENT PROFILE  │
-                               └──────────────────┘
-```
+### v2.0 — Leave Management & Approval Engine
+- 📝 **Leave Application Form (`LEV-001`)**: Submission with leave type, start date, end date, reason, emergency contact, and optional attachment.
+- 🛡️ **Validation & Overlap Check (`LEV-002`)**: Date sequence verification and overlap rejection against existing approved or pending leaves.
+- 🔄 **SIS Hierarchy Routing (`LEV-003`, `SH-007`)**:
+  - Student requests route dynamically to their **Assigned Faculty Mentor**; if unassigned, to the **Hostel Warden** or **Department HOD**.
+  - Staff requests route to their **Department HOD** or **Administrator**.
+- ✍️ **Approver Decisions (`LEV-004`, `LEV-005`)**: Approvers can **Approve**, **Reject**, or **Return for Correction** with mandatory review comments.
+- 📜 **Audit Trail & State Machine (`SH-006`, State Model 6.3)**: Full transition history (`Draft` -> `Pending` -> `Approved` / `Rejected` / `Returned` / `Cancelled`).
+- 💳 **Balance & Quota Tracking (`LEV-008`)**: Real-time quota calculation for Casual Leave (CL), Medical Leave (ML), Home Visit (HV), and On-Duty Leave (OD).
+- ⚙️ **Admin Policy Configuration (`LEV-009`)**: Add and configure leave types, codes, audience scopes, and default quotas.
 
 ---
 
@@ -134,31 +90,26 @@ The system supports **7 distinct user roles**. Pre-configured demo accounts can 
 - `POST /api/auth/logout` — Clear session authentication cookie
 - `GET /api/auth/me` — Retrieve current authenticated user profile & permissions
 
-### Admin Management (`/api/admin`)
-- `GET /api/admin/stats` — High-level dashboard counter metrics & statistics
-- `POST /api/admin/import/students` — Process bulk student upload via Excel/CSV
+### Leave Management (`/api/leaves`) — *v2.0*
+- `GET /api/leaves/types` — List active leave types and quotas
+- `POST /api/leaves/types` — (Admin) Configure new leave type
+- `GET /api/leaves/balances` — Retrieve user's remaining, used, and pending leave balances
+- `GET /api/leaves/my` — Applicant's personal leave applications history
+- `GET /api/leaves/pending` — Approver queue for pending leave requests routed by SIS hierarchy
+- `POST /api/leaves` — Submit new leave application
+- `POST /api/leaves/:id/review` — Approver decision (`Approved`, `Rejected`, `Returned`) with comments
+- `POST /api/leaves/:id/cancel` — Applicant self-service cancellation
+- `GET /api/leaves/:id` — Detailed leave view with full approval history and audit trail
+- `GET /api/leaves` — (Admin/HOD/Warden) Campus-wide leave records with filters
 
-### Student Management (`/api/students`)
-- `GET /api/students` — Paginated student search with filters (branch, sem, section, query)
-- `POST /api/students` — Register a new student profile
-- `GET /api/students/export` — Download full student directory as an `.xlsx` file
-- `GET /api/students/:id` — Get detailed student profile
-- `PUT /api/students/:id` — Update student record
-- `DELETE /api/students/:id` — Remove student record
+### SIS & Directories (`/api/students`, `/api/staff`, `/api/departments`, `/api/hostels`)
+- `GET /api/students` — Paginated student directory with search & filters
+- `POST /api/students` — Register a student profile
+- `GET /api/students/export` — Download student directory as `.xlsx`
+- `GET /api/staff` — List staff members filterable by role & department
+- `GET /api/departments` & `GET /api/hostels` — Departmental & residential blocks
 
-### Staff & Faculty (`/api/staff`)
-- `GET /api/staff` — List all staff profiles (filterable by department and role)
-- `POST /api/staff` — Register new staff member
-- `GET /api/staff/:id` — Get specific staff details
-- `PUT /api/staff/:id` — Update staff profile
-
-### Departments & Hostels (`/api/departments` & `/api/hostels`)
-- `GET /api/departments` — List departments with HOD associations
-- `POST /api/departments` — Create new academic department
-- `GET /api/hostels` — List hostels with capacity, warden details, and residents count
-- `POST /api/hostels` — Register new hostel block
-
-### Special Role Portals
+### Role Portals (`/api/mentor`, `/api/warden`, `/api/hod`, `/api/parent`)
 - `GET /api/mentor/mentees` — Retrieve list of mentees for the logged-in mentor
 - `GET /api/warden/residents` — Retrieve resident students for warden's hostel
 - `GET /api/hod/overview` — Fetch departmental overview & student/faculty directory
@@ -166,135 +117,50 @@ The system supports **7 distinct user roles**. Pre-configured demo accounts can 
 
 ---
 
-## 📂 Project Directory Structure
-
-```text
-SPSU_Website/
-├── README.md
-├── client/                     # Frontend Application (React + Vite + TS)
-│   ├── public/                 # Static assets & logos
-│   ├── src/
-│   │   ├── components/         # Shared UI components (Badge, Button, Layout, Navbar, Sidebar)
-│   │   ├── context/            # Global Auth Context & State
-│   │   ├── pages/              # Role-specific page components
-│   │   │   ├── admin/          # Admin portal pages
-│   │   │   ├── faculty/        # Faculty dashboard
-│   │   │   ├── hod/            # HOD analytics dashboard
-│   │   │   ├── mentor/         # Mentor mentee portal
-│   │   │   ├── parent/         # Parent overview page
-│   │   │   ├── public/         # Landing, Login, 404, Unauthorized pages
-│   │   │   ├── student/        # Student dashboard & profile
-│   │   │   └── warden/         # Hostel warden management
-│   │   ├── routes/             # AppRoutes, ProtectedRoute, RoleRoute
-│   │   ├── services/           # Axios API services for each module
-│   │   ├── types/              # TypeScript interfaces & types
-│   │   ├── main.tsx            # Application entry point
-│   │   └── index.css           # Tailwind CSS directives & custom theme
-│   ├── package.json
-│   ├── tailwind.config.js      # SPSU custom brand color configuration
-│   ├── tsconfig.json
-│   └── vite.config.ts          # Vite build & proxy settings
-│
-└── server/                     # Backend API Server (Node + Express + TS)
-    ├── src/
-    │   ├── config/             # Database, Redis, and Env configurations
-    │   ├── controllers/        # Express route handlers
-    │   ├── middlewares/        # Auth JWT check, Role validation, Error handling
-    │   ├── models/             # Mongoose schemas (User, Student, Staff, Dept, Hostel)
-    │   ├── routes/             # Express API routes
-    │   ├── seed/               # Database seeder script
-    │   ├── services/           # Business logic & bulk parsing services
-    │   ├── types/              # Server TypeScript type definitions
-    │   ├── validators/         # Zod payload validation schemas
-    │   ├── app.ts              # Express application configuration
-    │   └── server.ts           # Server listener entry point
-    ├── package.json
-    └── tsconfig.json
-```
-
----
-
-## ⚙️ Environment Configuration
-
-Create a `.env` file in the `server/` directory if custom parameters are needed (defaults are pre-configured in `src/config/env.ts`):
-
-```env
-PORT=5000
-NODE_ENV=development
-MONGODB_URI=mongodb://127.0.0.1:27017/spsu_cms
-JWT_SECRET=spsu_cms_super_secret_jwt_key_2026_v1_0
-JWT_EXPIRES_IN=7d
-REDIS_URL=redis://127.0.0.1:6379
-CLIENT_URL=http://localhost:5173
-```
-
----
-
 ## 🚀 Quick Start & Setup Guide
-
-### Prerequisites
-- **Node.js**: `v18.x` or higher
-- **npm**: `v9.x` or higher
-- **MongoDB**: Local MongoDB instance running on port `27017` or a MongoDB Atlas URI
-- *(Optional)* **Redis**: Local Redis server running on port `6379` (In-memory fallback activates automatically if Redis is unavailable)
 
 ### 1. Server Setup & Database Seeding
 
 ```bash
-# Navigate to server directory
 cd server
-
-# Install dependencies
 npm install
-
-# Seed default database records (Depts, Hostels, Admin, Staff, Students, Parents)
 npm run seed
-
-# Start development backend API server
 npm run dev
 ```
-*API Server will run at `http://localhost:5000`*
+*API Server runs at `http://localhost:5000`*
 
 ### 2. Client Setup & Launch
 
 ```bash
-# Open a new terminal tab and navigate to client directory
 cd client
-
-# Install dependencies
 npm install
-
-# Start Vite development server
 npm run dev
 ```
-*Client application will launch at `http://localhost:5173`*
+*Web application runs at `http://localhost:5173`*
 
 ---
 
 ## 🧪 Verification & Build Commands
 
-To test production TypeScript compilation and builds:
-
 ```bash
-# Build backend distribution
-cd server
-npm run build
+# Run v1.0 SIS E2E Integration Suite (22 test cases)
+powershell -ExecutionPolicy Bypass -File .\test-e2e.ps1
 
-# Build frontend production bundle
-cd client
-npm run build
+# Run v2.0 Leave Management Integration Suite (10 test cases)
+powershell -ExecutionPolicy Bypass -File .\test-v2-leaves.ps1
+
+# Build backend and frontend production distributions
+cd server && npm run build
+cd client && npm run build
 ```
-
-Both build processes output clean, type-checked production distributions in `server/dist` and `client/dist`.
 
 ---
 
-## 🔮 Future System Roadmap
+## 🔮 Future System Roadmap (v3.0 - v4.0)
 
-- 🗓️ **v2.0 — Leave & Outing Management**: Gate pass requests, online parental approvals, warden sign-offs.
-- 📋 **v3.0 — Attendance & Course Management**: Daily attendance tracking, subject registration, timetable scheduling.
-- 📢 **v3.5 — Notice Board & Grievances**: Campus announcements, departmental notices, grievance ticketing portal.
-- 💳 **v4.0 — Fee & Payment Integration**: Online tuition fee payments, hostel fee tracking, receipt generation.
+- 🎫 **v3.0 — Event & Permission Management**: Campus event publishing, RSVP limits, gate pass / outing requests with parent & warden sign-offs, and leave overlap conflict checks.
+- 🛡️ **v3.5 — Complaint / Grievance Portal**: Ticketing system with category routing, anonymous complaint privacy, and sensitive case escalation to Designated Authority.
+- 📢 **v4.0 — Communication & Notice Board**: Audience-targeted announcements, urgent notice pinning, and unified in-app notification center.
 
 ---
 
