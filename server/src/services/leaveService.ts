@@ -7,6 +7,7 @@ import { Department } from '../models/Department.js';
 import { Hostel } from '../models/Hostel.js';
 import { User } from '../models/User.js';
 import { cache } from '../config/redis.js';
+import { NotificationService } from './notificationService.js';
 
 export class LeaveService {
   /**
@@ -232,6 +233,15 @@ export class LeaveService {
     if (leave.currentApprover) {
       await cache.del(`leave:approver:${leave.currentApprover}`);
     }
+
+    // Trigger notification to applicant (COM-004)
+    await NotificationService.notify(
+      leave.applicant as any,
+      `Leave Request ${action}`,
+      `Your leave request for ${leave.numberOfDays} day(s) was ${action.toLowerCase()} by approver.`,
+      'Leave',
+      '/student/leaves'
+    );
 
     return leave;
   }

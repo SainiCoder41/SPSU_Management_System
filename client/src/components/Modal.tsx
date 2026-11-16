@@ -7,6 +7,7 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -14,8 +15,10 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  maxWidth = 'lg',
+  maxWidth,
+  size,
 }) => {
+  const effectiveWidth = size || maxWidth || 'lg';
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -50,7 +53,7 @@ export const Modal: React.FC<ModalProps> = ({
 
       {/* Content */}
       <div
-        className={`relative bg-white rounded-2xl shadow-2xl border border-slate-100 w-full ${maxWidthStyles[maxWidth]} z-10 overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200`}
+        className={`relative bg-white rounded-2xl shadow-2xl border border-slate-100 w-full ${maxWidthStyles[effectiveWidth]} z-10 overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200`}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
           <h3 className="text-lg font-bold text-spsu-navy">{title}</h3>

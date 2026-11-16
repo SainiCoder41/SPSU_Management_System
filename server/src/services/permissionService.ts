@@ -3,6 +3,7 @@ import { PermissionType } from '../models/PermissionType.js';
 import { Student } from '../models/Student.js';
 import { LeaveRequest } from '../models/LeaveRequest.js';
 import { User } from '../models/User.js';
+import { NotificationService } from './notificationService.js';
 
 export class PermissionService {
   static async submitPermission(
@@ -144,6 +145,16 @@ export class PermissionService {
     });
 
     await perm.save();
+
+    // Notify student about warden sign-off (COM-004)
+    await NotificationService.notify(
+      perm.student as any,
+      `Warden Sign-Off: Gate Pass ${action}`,
+      `Hostel Warden marked your outing/gate pass as ${action}.`,
+      'Permission',
+      '/student/permissions'
+    );
+
     return perm;
   }
 
@@ -182,6 +193,16 @@ export class PermissionService {
     });
 
     await perm.save();
+
+    // Notify student about parent sign-off (COM-004)
+    await NotificationService.notify(
+      perm.student as any,
+      `Parent Sign-Off: Gate Pass ${action}`,
+      `Your parent marked your outing/gate pass as ${action}.`,
+      'Permission',
+      '/student/permissions'
+    );
+
     return perm;
   }
 

@@ -15,6 +15,8 @@ import {
   Clock,
   Sparkles,
   Ticket,
+  LifeBuoy,
+  Bell,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -34,6 +36,8 @@ export const Sidebar: React.FC = () => {
           { label: 'Hostel Blocks', path: '/admin/hostels', icon: <Home size={18} /> },
           { label: 'Leave Administration', path: '/admin/leaves', icon: <CalendarCheck size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
+          { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
+          { label: 'Grievance Redressal', path: '/complaints/manage', icon: <LifeBuoy size={18} /> },
           { label: 'Approvals Queue', path: '/approver/leaves', icon: <Clock size={18} /> },
         ];
       case 'STUDENT':
@@ -43,12 +47,16 @@ export const Sidebar: React.FC = () => {
           { label: 'Leave Applications', path: '/student/leaves', icon: <CalendarCheck size={18} /> },
           { label: 'Gate Pass & Outings', path: '/student/permissions', icon: <Ticket size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
+          { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
+          { label: 'Grievance Portal', path: '/complaints', icon: <LifeBuoy size={18} /> },
         ];
       case 'FACULTY':
         return [
           { label: 'Faculty Dashboard', path: '/faculty', icon: <LayoutDashboard size={18} /> },
           { label: 'Students Directory', path: '/faculty/students', icon: <GraduationCap size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
+          { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
+          { label: 'Grievance Desk', path: '/complaints/manage', icon: <LifeBuoy size={18} /> },
           { label: 'Leave Approvals Queue', path: '/approver/leaves', icon: <Clock size={18} /> },
         ];
       case 'MENTOR':
@@ -56,6 +64,8 @@ export const Sidebar: React.FC = () => {
           { label: 'Mentor Portal', path: '/mentor', icon: <UserCheck size={18} /> },
           { label: 'Assigned Mentees', path: '/mentor/mentees', icon: <GraduationCap size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
+          { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
+          { label: 'Grievance Desk', path: '/complaints/manage', icon: <LifeBuoy size={18} /> },
           { label: 'Mentee Leave Queue', path: '/approver/leaves', icon: <Clock size={18} /> },
         ];
       case 'WARDEN':
@@ -63,6 +73,9 @@ export const Sidebar: React.FC = () => {
           { label: 'Hostel Dashboard', path: '/warden', icon: <Home size={18} /> },
           { label: 'Resident Directory', path: '/warden/residents', icon: <Users size={18} /> },
           { label: 'Resident Gate Passes', path: '/warden/permissions', icon: <Ticket size={18} /> },
+          { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
+          { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
+          { label: 'Grievance Desk', path: '/complaints/manage', icon: <LifeBuoy size={18} /> },
           { label: 'Hostel Leave Queue', path: '/approver/leaves', icon: <Clock size={18} /> },
         ];
       case 'HOD':
@@ -71,11 +84,16 @@ export const Sidebar: React.FC = () => {
           { label: 'Faculty Roster', path: '/hod/faculty', icon: <Users size={18} /> },
           { label: 'Department Students', path: '/hod/students', icon: <GraduationCap size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
+          { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
+          { label: 'Grievance Desk', path: '/complaints/manage', icon: <LifeBuoy size={18} /> },
           { label: 'Department Leave Queue', path: '/approver/leaves', icon: <Clock size={18} /> },
         ];
       case 'PARENT':
         return [
           { label: 'Parent Portal', path: '/parent', icon: <Shield size={18} /> },
+          { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
+          { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
+          { label: 'Grievance Portal', path: '/complaints', icon: <LifeBuoy size={18} /> },
         ];
       default:
         return [];
@@ -117,7 +135,7 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       <div className="p-4 border-t border-slate-800/80 text-xs text-slate-400 text-center">
-        <p className="font-semibold text-slate-300">SPSU Campus v1.0</p>
+        <p className="font-semibold text-slate-300">SPSU Campus v4.0</p>
         <p className="text-[11px] text-slate-400 mt-0.5">Udaipur, Rajasthan</p>
       </div>
     </aside>

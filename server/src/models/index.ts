@@ -10,3 +10,6 @@ export * from './LeaveRequest.js';
 export * from './Event.js';
 export * from './PermissionType.js';
 export * from './PermissionRequest.js';
+export * from './Complaint.js';
+export * from './Notice.js';
+export * from './Notification.js';

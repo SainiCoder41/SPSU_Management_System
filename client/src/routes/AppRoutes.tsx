@@ -32,6 +32,9 @@ import { WardenPermissionsQueue } from '../pages/warden/WardenPermissionsQueue';
 import { HodDashboard } from '../pages/hod/HodDashboard';
 import { ParentDashboard } from '../pages/parent/ParentDashboard';
 import { EventsCatalog } from '../pages/events/EventsCatalog';
+import { ComplaintPortal } from '../pages/complaints/ComplaintPortal';
+import { ComplaintManagement } from '../pages/complaints/ComplaintManagement';
+import { NoticeBoard } from '../pages/communication/NoticeBoard';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -62,8 +65,17 @@ export const AppRoutes: React.FC = () => {
             <Route path="/student/permissions" element={<StudentPermissions />} />
           </Route>
 
-          {/* Campus Events (Accessible to All Authenticated Roles) */}
+          {/* Campus Events & Notice Board (Accessible to All Authenticated Roles) */}
           <Route path="/events" element={<EventsCatalog />} />
+          <Route path="/notices" element={<NoticeBoard />} />
+
+          {/* Grievance Portal for Submissions */}
+          <Route path="/complaints" element={<ComplaintPortal />} />
+
+          {/* Grievance Desk / Management for Handlers */}
+          <Route element={<RoleRoute allowedRoles={['ADMIN', 'HOD', 'WARDEN', 'FACULTY', 'MENTOR']} />}>
+            <Route path="/complaints/manage" element={<ComplaintManagement />} />
+          </Route>
 
           {/* Approver Shared Routes (Mentors, Wardens, HODs, Faculty, Admin) */}
           <Route element={<RoleRoute allowedRoles={['MENTOR', 'WARDEN', 'HOD', 'FACULTY', 'ADMIN']} />}>

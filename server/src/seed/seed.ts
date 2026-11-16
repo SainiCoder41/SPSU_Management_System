@@ -12,6 +12,9 @@ import { LeaveRequest } from '../models/LeaveRequest.js';
 import { Event } from '../models/Event.js';
 import { PermissionType } from '../models/PermissionType.js';
 import { PermissionRequest } from '../models/PermissionRequest.js';
+import { Complaint } from '../models/Complaint.js';
+import { Notice } from '../models/Notice.js';
+import { Notification } from '../models/Notification.js';
 
 export const seedDatabase = async (disconnectAfter: boolean = true) => {
   try {
@@ -35,6 +38,9 @@ export const seedDatabase = async (disconnectAfter: boolean = true) => {
       Event.deleteMany({}),
       PermissionType.deleteMany({}),
       PermissionRequest.deleteMany({}),
+      Complaint.deleteMany({}),
+      Notice.deleteMany({}),
+      Notification.deleteMany({}),
     ]);
 
     // 1. Create Departments
@@ -602,6 +608,145 @@ export const seedDatabase = async (disconnectAfter: boolean = true) => {
           comment: 'Submitted Night Outing / Overnight Stay pass',
         },
       ],
+    });
+
+    // 14. Seed Sample Complaints / Grievances (v3.5)
+    console.log('📬 Creating Grievances & Complaints (v3.5)...');
+    await Complaint.create({
+      ticketNumber: 'GRV-2026-0001',
+      complainant: student1User._id,
+      isAnonymous: false,
+      category: 'Hostel',
+      isSensitive: false,
+      title: 'Water cooler filtration unit in Boys Hostel 2 2nd Floor',
+      description: 'The RO drinking water filter unit on the 2nd floor of BH-2 has low water pressure and needs filter replacement.',
+      status: 'Under Review',
+      priority: 'Medium',
+      assignedDepartment: deptCse._id,
+      assignedOwner: wardenUser._id,
+      notes: [
+        {
+          author: wardenUser._id,
+          authorName: wardenUser.name,
+          isInternal: false,
+          text: 'Maintenance request logged with campus facilities team. Technician arriving tomorrow.',
+          createdAt: new Date(),
+        },
+      ],
+      auditTrail: [
+        {
+          actor: student1User._id,
+          action: 'Complaint Submitted',
+          timestamp: new Date(),
+          previousState: 'Draft',
+          newState: 'Submitted',
+          comment: 'Ticket GRV-2026-0001 registered successfully',
+        },
+        {
+          actor: wardenUser._id,
+          action: 'Status changed to Under Review',
+          timestamp: new Date(),
+          previousState: 'Submitted',
+          newState: 'Under Review',
+          comment: 'Warden reviewed and notified facilities team',
+        },
+      ],
+    });
+
+    // Sensitive Grievance (Ragging/Harassment) assigned to Designated Authority (Admin)
+    await Complaint.create({
+      ticketNumber: 'GRV-2026-0002',
+      complainant: student1User._id,
+      isAnonymous: true,
+      category: 'Ragging / Harassment',
+      isSensitive: true,
+      title: 'Verbal intimidation reported near Sports Complex',
+      description: 'Senior students observed intimidating 1st year students near the indoor badminton courts after 8:30 PM.',
+      status: 'Submitted',
+      priority: 'Critical',
+      assignedOwner: adminUser._id,
+      notes: [],
+      auditTrail: [
+        {
+          actor: student1User._id,
+          action: 'Complaint Submitted',
+          timestamp: new Date(),
+          previousState: 'Draft',
+          newState: 'Submitted',
+          comment: 'Ticket GRV-2026-0002 registered successfully (Sensitive)',
+        },
+      ],
+    });
+
+    // 15. Seed Notices (v4.0 Notice Board)
+    console.log('📢 Creating Campus Notices & Announcements (v4.0)...');
+    await Notice.create({
+      title: 'Mid-Term Examination Schedule - Autumn 2026',
+      body: 'The mid-term examination timetable for B.Tech Semester 4 and Semester 6 has been released. Examinations commence on 10th December 2026. Hall tickets will be issued via the SIS portal.',
+      priority: 'Important',
+      isPinned: true,
+      targetAudience: {
+        roles: ['STUDENT', 'FACULTY', 'MENTOR'],
+        departments: [],
+        semesters: [],
+      },
+      publisher: adminUser._id,
+      status: 'Published',
+      publishDate: new Date(),
+      viewCount: 142,
+    });
+
+    await Notice.create({
+      title: 'Hostel Mess Menu Revision & Committee Meeting',
+      body: 'A meeting of the Student Hostel & Mess Committee will take place this Thursday at 5:00 PM in Seminar Hall 1 to review nutritional quality and student feedback.',
+      priority: 'Normal',
+      isPinned: false,
+      targetAudience: {
+        roles: ['STUDENT', 'WARDEN'],
+        hostels: [hostelBh2._id],
+      },
+      publisher: wardenUser._id,
+      status: 'Published',
+      publishDate: new Date(),
+      viewCount: 48,
+    });
+
+    // 16. Seed Notifications (v4.0 In-App Notifications)
+    console.log('🔔 Creating In-App Notifications (v4.0)...');
+    await Notification.create({
+      recipient: student1User._id,
+      title: 'Gate Pass Submitted',
+      message: 'Your Night Outing / Overnight Stay pass has been submitted and is awaiting warden review.',
+      sourceModule: 'Permission',
+      link: '/student/permissions',
+      isRead: false,
+    });
+
+    await Notification.create({
+      recipient: student1User._id,
+      title: 'Notice: Mid-Term Examination Schedule',
+      message: 'A new important notice has been posted regarding Autumn 2026 examinations.',
+      sourceModule: 'Notice',
+      link: '/notices',
+      isRead: false,
+    });
+
+    await Notification.create({
+      recipient: wardenUser._id,
+      title: 'New Permission Request Pending',
+      message: 'Aarav Sharma has requested a Night Outing pass requiring your sign-off.',
+      sourceModule: 'Permission',
+      link: '/warden/permissions',
+      isRead: false,
+    });
+
+    await Notification.create({
+      recipient: adminUser._id,
+      title: '⚠️ Sensitive Grievance Received',
+      message: 'Sensitive complaint GRV-2026-0002 (Ragging / Harassment) requires immediate investigation.',
+      sourceModule: 'Complaint',
+      link: '/complaints/manage?ticket=GRV-2026-0002',
+      isRead: false,
     });
 
     console.log('✅ Database seeding finished successfully!');
