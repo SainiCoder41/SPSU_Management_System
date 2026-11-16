@@ -1,22 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { portalService } from '../../services/portalService';
+import { permissionService } from '../../services/permissionService';
 import { Student, ParentRecord } from '../../types';
+import { PermissionRequest } from '../../types/permission';
 import { StatsCard } from '../../components/StatsCard';
-import { Shield, GraduationCap, Award, BookOpen, Home, UserCheck, Phone, Mail, MapPin } from 'lucide-react';
+import { Button } from '../../components/Button';
+import {
+  Shield,
+  GraduationCap,
+  Award,
+  BookOpen,
+  Home,
+  UserCheck,
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react';
 
 export const ParentDashboard: React.FC = () => {
   const { user } = useAuth();
   const [parentRecord, setParentRecord] = useState<ParentRecord | null>(null);
   const [student, setStudent] = useState<Student | null>(null);
+  const [pendingPasses, setPendingPasses] = useState<PermissionRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchParentInfo = async () => {
     setLoading(true);
     try {
-      const res = await portalService.getParentStudent();
+      const [res, queue] = await Promise.all([
+        portalService.getParentStudent(),
+        permissionService.getParentQueue(),
+      ]);
       setParentRecord(res.parent);
       setStudent(res.student);
+      setPendingPasses(queue);
     } catch (err) {
       console.error('Error fetching parent student info:', err);
     } finally {
@@ -27,6 +48,19 @@ export const ParentDashboard: React.FC = () => {
   useEffect(() => {
     fetchParentInfo();
   }, []);
+
+  const handleSignOff = async (id: string, action: 'Approved' | 'Rejected') => {
+    const comments =
+      action === 'Approved'
+        ? 'Parent confirmed and granted permission for overnight stay.'
+        : 'Parent denied overnight stay permission.';
+    try {
+      await permissionService.signOffParentPermission(id, action, comments);
+      fetchParentInfo();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Error updating sign-off');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -76,6 +110,70 @@ export const ParentDashboard: React.FC = () => {
           icon={<Home size={22} />}
         />
       </div>
+
+      {/* Outing / Gate Pass Sign-Off Requests (PER-003) */}
+      {pendingPasses.length > 0 && (
+        <div className="bg-white rounded-xl border border-rose-200 p-6 shadow-sm space-y-4">
+          <div className="flex items-center gap-2 text-rose-800">
+            <Clock size={18} />
+            <h2 className="text-base font-bold">
+              Parental Authorization Required ({pendingPasses.length} Outing Requests)
+            </h2>
+          </div>
+          <p className="text-xs text-slate-500">
+            Your ward has applied for an overnight stay that requires formal parent approval before the hostel warden can release the gate pass.
+          </p>
+
+          <div className="space-y-3">
+            {pendingPasses.map((pass) => (
+              <div
+                key={pass._id}
+                className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs"
+              >
+                <div className="space-y-1 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-800 text-sm">
+                      {pass.permissionType?.name}
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-rose-50 text-rose-700 text-[10px] font-semibold border border-rose-200">
+                      Parent Sign-off Pending
+                    </span>
+                  </div>
+                  <div className="text-slate-600">
+                    <span className="font-medium">Destination:</span> {pass.destination} •{' '}
+                    <span className="font-medium">Departure:</span>{' '}
+                    {new Date(pass.startDateTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })} •{' '}
+                    <span className="font-medium">Return:</span>{' '}
+                    {new Date(pass.endDateTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                  </div>
+                  <div className="text-slate-500">
+                    <span className="font-medium">Reason:</span> {pass.reason}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <Button
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    onClick={() => handleSignOff(pass._id, 'Approved')}
+                    icon={<CheckCircle size={14} />}
+                  >
+                    Grant Parent Approval
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={() => handleSignOff(pass._id, 'Rejected')}
+                    icon={<XCircle size={14} />}
+                  >
+                    Deny Permission
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Detailed Child Academic & Residential Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

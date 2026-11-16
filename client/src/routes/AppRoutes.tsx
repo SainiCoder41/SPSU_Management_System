@@ -21,14 +21,17 @@ import { LeaveManagement } from '../pages/admin/LeaveManagement';
 import { StudentDashboard } from '../pages/student/StudentDashboard';
 import { StudentHostelMentor } from '../pages/student/StudentHostelMentor';
 import { StudentLeaves } from '../pages/student/StudentLeaves';
+import { StudentPermissions } from '../pages/student/StudentPermissions';
 
 import { ApproverLeaveQueue } from '../pages/approver/ApproverLeaveQueue';
 
 import { FacultyDashboard } from '../pages/faculty/FacultyDashboard';
 import { MentorDashboard } from '../pages/mentor/MentorDashboard';
 import { WardenDashboard } from '../pages/warden/WardenDashboard';
+import { WardenPermissionsQueue } from '../pages/warden/WardenPermissionsQueue';
 import { HodDashboard } from '../pages/hod/HodDashboard';
 import { ParentDashboard } from '../pages/parent/ParentDashboard';
+import { EventsCatalog } from '../pages/events/EventsCatalog';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -56,11 +59,20 @@ export const AppRoutes: React.FC = () => {
             <Route path="/student" element={<StudentDashboard />} />
             <Route path="/student/hostel-mentor" element={<StudentHostelMentor />} />
             <Route path="/student/leaves" element={<StudentLeaves />} />
+            <Route path="/student/permissions" element={<StudentPermissions />} />
           </Route>
+
+          {/* Campus Events (Accessible to All Authenticated Roles) */}
+          <Route path="/events" element={<EventsCatalog />} />
 
           {/* Approver Shared Routes (Mentors, Wardens, HODs, Faculty, Admin) */}
           <Route element={<RoleRoute allowedRoles={['MENTOR', 'WARDEN', 'HOD', 'FACULTY', 'ADMIN']} />}>
             <Route path="/approver/leaves" element={<ApproverLeaveQueue />} />
+          </Route>
+
+          {/* Warden Permission Queue */}
+          <Route element={<RoleRoute allowedRoles={['WARDEN', 'ADMIN']} />}>
+            <Route path="/warden/permissions" element={<WardenPermissionsQueue />} />
           </Route>
 
           {/* Faculty Routes */}

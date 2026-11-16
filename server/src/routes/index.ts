@@ -6,6 +6,8 @@ import staffRoutes from './staffRoutes.js';
 import departmentRoutes from './departmentRoutes.js';
 import hostelRoutes from './hostelRoutes.js';
 import leaveRoutes from './leaveRoutes.js';
+import eventRoutes from './eventRoutes.js';
+import permissionRoutes from './permissionRoutes.js';
 import { mentorRouter, wardenRouter, hodRouter, parentRouter } from './portalRoutes.js';
 
 const router = Router();
@@ -17,6 +19,8 @@ router.use('/staff', staffRoutes);
 router.use('/departments', departmentRoutes);
 router.use('/hostels', hostelRoutes);
 router.use('/leaves', leaveRoutes);
+router.use('/events', eventRoutes);
+router.use('/permissions', permissionRoutes);
 router.use('/mentor', mentorRouter);
 router.use('/warden', wardenRouter);
 router.use('/hod', hodRouter);

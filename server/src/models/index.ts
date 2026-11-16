@@ -7,3 +7,6 @@ export * from './Parent.js';
 export * from './LeaveType.js';
 export * from './LeaveBalance.js';
 export * from './LeaveRequest.js';
+export * from './Event.js';
+export * from './PermissionType.js';
+export * from './PermissionRequest.js';

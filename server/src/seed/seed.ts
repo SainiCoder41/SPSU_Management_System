@@ -9,6 +9,9 @@ import { Parent } from '../models/Parent.js';
 import { LeaveType } from '../models/LeaveType.js';
 import { LeaveBalance } from '../models/LeaveBalance.js';
 import { LeaveRequest } from '../models/LeaveRequest.js';
+import { Event } from '../models/Event.js';
+import { PermissionType } from '../models/PermissionType.js';
+import { PermissionRequest } from '../models/PermissionRequest.js';
 
 export const seedDatabase = async (disconnectAfter: boolean = true) => {
   try {
@@ -29,6 +32,9 @@ export const seedDatabase = async (disconnectAfter: boolean = true) => {
       LeaveType.deleteMany({}),
       LeaveBalance.deleteMany({}),
       LeaveRequest.deleteMany({}),
+      Event.deleteMany({}),
+      PermissionType.deleteMany({}),
+      PermissionRequest.deleteMany({}),
     ]);
 
     // 1. Create Departments
@@ -458,6 +464,142 @@ export const seedDatabase = async (disconnectAfter: boolean = true) => {
           previousState: 'Draft',
           newState: 'Pending',
           comment: 'Applicant requested 3 days of Home Visit Leave',
+        },
+      ],
+    });
+
+    // 12. Create Campus Events (v3.0 Event Management)
+    console.log('🎪 Creating Campus Events (v3.0 Event Management)...');
+    const hackathonEvent = await Event.create({
+      title: 'SPSU National Hackathon 2026',
+      description: '36-hour flagship hackathon on Generative AI, IoT, and Cloud Infrastructure with industry mentors from JK Cement & Tech partners.',
+      category: 'Technical',
+      dateTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      endDateTime: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000 + 12 * 60 * 60 * 1000),
+      venue: 'Academic Block A, Main Auditorium & Computing Labs',
+      organizer: facultyUser._id,
+      organizerDepartment: deptCse._id,
+      targetAudience: {
+        roles: ['STUDENT', 'FACULTY'],
+        departments: [],
+        semesters: [],
+      },
+      capacity: 120,
+      registeredCount: 1,
+      isRegistrationOpen: true,
+      status: 'Published',
+      registrations: [
+        {
+          student: student1._id,
+          user: student1User._id,
+          registeredAt: new Date(),
+          status: 'Confirmed',
+        },
+      ],
+    });
+
+    await Event.create({
+      title: 'Panache 2026: Annual Cultural & Youth Fest',
+      description: 'The premier inter-college cultural festival featuring musical band battles, dance showdowns, fashion pageants, and food stalls.',
+      category: 'Cultural',
+      dateTime: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      endDateTime: new Date(Date.now() + 16 * 24 * 60 * 60 * 1000),
+      venue: 'SPSU Central Lawn & Amphitheatre',
+      organizer: adminUser._id,
+      capacity: 500,
+      registeredCount: 0,
+      isRegistrationOpen: true,
+      status: 'Published',
+      registrations: [],
+    });
+
+    await Event.create({
+      title: 'Distinguished Lecture: AI in Autonomous Manufacturing',
+      description: 'Guest keynote session by visiting professors on robotics, automation and cyber-physical production lines.',
+      category: 'Academic',
+      dateTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      endDateTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
+      venue: 'Sir Padampat Memorial Seminar Hall',
+      organizer: hodUser._id,
+      organizerDepartment: deptCse._id,
+      capacity: 80,
+      registeredCount: 0,
+      isRegistrationOpen: true,
+      status: 'Published',
+      registrations: [],
+    });
+
+    // 13. Create Permission Types (v3.0 Permission / Gate Pass Management)
+    console.log('🎫 Creating Permission & Gate Pass Types (v3.0)...');
+    const permTypes = await PermissionType.create([
+      {
+        name: 'Day Outing Pass',
+        code: 'DAY_OUTING',
+        requiresWardenSignOff: true,
+        requiresParentSignOff: false,
+        maxDurationHours: 10,
+        description: 'Local city visit / shopping during permitted daytime hours with evening return',
+      },
+      {
+        name: 'Night Outing / Overnight Stay',
+        code: 'NIGHT_OUTING',
+        requiresWardenSignOff: true,
+        requiresParentSignOff: true,
+        maxDurationHours: 48,
+        description: 'Overnight stay at local guardian or emergency travel requiring both Warden approval and Parent sign-off',
+      },
+      {
+        name: 'Late Campus Entry',
+        code: 'LATE_ENTRY',
+        requiresWardenSignOff: true,
+        requiresParentSignOff: false,
+        maxDurationHours: 4,
+        description: 'Permission to enter campus premises past standard 8:30 PM gate closure',
+      },
+      {
+        name: 'Special Lab & Project Night Pass',
+        code: 'LAB_PASS',
+        requiresWardenSignOff: false,
+        requiresParentSignOff: false,
+        maxDurationHours: 12,
+        description: 'Night access to Central Computing Facility or Innovation Lab for project work',
+      },
+    ]);
+
+    const nightPassType = permTypes.find((p) => p.code === 'NIGHT_OUTING')!;
+
+    // Seed Sample Permission Request (Pending for Warden and Parent)
+    console.log('🎫 Creating sample Permission Request for student1...');
+    await PermissionRequest.create({
+      applicant: student1User._id,
+      student: student1._id,
+      permissionType: nightPassType._id,
+      startDateTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+      endDateTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      destination: 'Family residence in Shobhagpura, Udaipur',
+      reason: 'Weekend family stay and personal study leave',
+      emergencyContact: '+91 94140 12345',
+      hasLeaveConflict: false,
+      leaveConflictDetails: '',
+      status: 'Pending',
+      wardenSignOff: {
+        signee: wardenUser._id,
+        status: 'Pending',
+        comments: '',
+      },
+      parentSignOff: {
+        signee: parentUser._id,
+        status: 'Pending',
+        comments: '',
+      },
+      auditTrail: [
+        {
+          actor: student1User._id,
+          action: 'PERMISSION_SUBMITTED',
+          timestamp: new Date(),
+          previousState: 'Draft',
+          newState: 'Pending',
+          comment: 'Submitted Night Outing / Overnight Stay pass',
         },
       ],
     });
