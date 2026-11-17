@@ -29,8 +29,9 @@ export const MentorAttentionList: React.FC = () => {
   const fetchRiskData = async () => {
     setLoading(true);
     try {
-      if (user?.role === 'HOD' && user.department) {
-        const deptId = typeof user.department === 'string' ? user.department : (user.department as any)._id;
+      const userDept = (user as any)?.department;
+      if (user?.role === 'HOD' && userDept) {
+        const deptId = typeof userDept === 'string' ? userDept : userDept._id;
         const data = await aiService.getDepartmentRisk(deptId);
         setProfiles(data);
       } else {
