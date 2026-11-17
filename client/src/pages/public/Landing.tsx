@@ -3,11 +3,16 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/Button';
 import {
-  ShieldCheck,
   GraduationCap,
-  Users,
   Building,
+  Users,
+  CalendarCheck,
+  Sparkles,
+  Ticket,
+  LifeBuoy,
+  Bell,
   ArrowRight,
+  ShieldCheck,
   CheckCircle,
 } from 'lucide-react';
 
@@ -36,7 +41,7 @@ export const Landing: React.FC = () => {
           <img src="/spsu-logo.svg" alt="SPSU Logo" className="h-10 w-auto" />
           <div>
             <h1 className="text-sm font-bold text-spsu-navy leading-none">Sir Padampat Singhania University</h1>
-            <p className="text-[11px] text-spsu-blue font-semibold mt-0.5">Campus Management System (v1.0 SIS)</p>
+            <p className="text-[11px] text-[#0057B8] font-semibold mt-0.5">Campus Management System (v4.0 Suite)</p>
           </div>
         </div>
 
@@ -58,15 +63,15 @@ export const Landing: React.FC = () => {
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-white to-slate-100 py-20 px-6 md:px-12 border-b border-slate-200">
         <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-spsu-lightBlue border border-blue-200 text-spsu-blue text-xs font-semibold mb-6">
-            <span className="w-2 h-2 rounded-full bg-spsu-blue animate-pulse"></span>
-            A JK Cement Initiative • Udaipur, Rajasthan
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#0057B8] text-xs font-semibold mb-6">
+            <span className="w-2 h-2 rounded-full bg-[#0057B8] animate-pulse"></span>
+            A JK Cement Initiative • Udaipur, Rajasthan • Complete Release v4.0
           </div>
           <h2 className="text-4xl md:text-5xl font-extrabold text-spsu-navy tracking-tight leading-tight">
-            Centralized Student Information & Academic Administration
+            Next-Gen Campus Life & Academic Administration Suite
           </h2>
-          <p className="mt-5 text-lg text-slate-600 max-w-3xl mx-auto">
-            Authoritative, role-guarded Student Information System foundation connecting students, faculty, mentors, wardens, department heads, and parents in one unified campus network.
+          <p className="mt-5 text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
+            A comprehensive, role-governed ERP unifying students, faculty, mentors, wardens, department heads, and parents — featuring SIS, automated leaves, campus events, gate passes, grievance redressal, and real-time circulars.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -76,50 +81,105 @@ export const Landing: React.FC = () => {
               </Button>
             </Link>
             <a
-              href="#roles"
+              href="#modules"
               className="px-5 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition-colors shadow-xs"
             >
-              Explore 7 User Roles
+              Explore v1.0 – v4.0 Modules
             </a>
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-16 px-6 md:px-12 max-w-6xl mx-auto">
+      {/* Enterprise Modules Grid (v1.0 to v4.0) */}
+      <section id="modules" className="py-16 px-6 md:px-12 max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h3 className="text-2xl font-bold text-spsu-navy">Core Capabilities in v1.0</h3>
-          <p className="text-slate-500 text-sm mt-1">Built specifically around SPSU's academic and residential infrastructure</p>
+          <span className="text-xs font-bold text-[#0057B8] uppercase tracking-wider">Comprehensive Architecture</span>
+          <h3 className="text-2xl font-bold text-spsu-navy mt-1">Integrated Campus Modules (v1.0 – v4.0)</h3>
+          <p className="text-slate-500 text-sm mt-1">Built specifically for SPSU's academic, residential, and administrative lifecycle</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
-            <div className="w-12 h-12 bg-spsu-lightBlue rounded-xl flex items-center justify-center text-spsu-blue mb-4">
-              <GraduationCap size={24} />
+          {/* v1.0 */}
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-[#0057B8]">
+                <GraduationCap size={24} />
+              </div>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-[#0057B8]">v1.0 SIS</span>
             </div>
-            <h4 className="font-bold text-slate-800 text-lg mb-2">Student Identity & Academics</h4>
-            <p className="text-sm text-slate-600">
-              Complete tracking of Enrollment Numbers, Roll Numbers, Programs (B.Tech, M.Tech), Department, Semesters, Sections, and CGPA metrics.
+            <h4 className="font-bold text-slate-800 text-lg mb-2">Student Information & SIS</h4>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Complete student profiles, enrollment, programs (B.Tech, M.Tech), hostel blocks (BH1–BH4, GH1–GH3), room allocations, and mentor mapping across 7 RBAC roles.
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
-            <div className="w-12 h-12 bg-spsu-lightBlue rounded-xl flex items-center justify-center text-spsu-blue mb-4">
-              <Building size={24} />
+          {/* v2.0 */}
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+                <CalendarCheck size={24} />
+              </div>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800">v2.0 Leaves</span>
             </div>
-            <h4 className="font-bold text-slate-800 text-lg mb-2">Hostel & Residential Blocks</h4>
-            <p className="text-sm text-slate-600">
-              Boys Hostels (BH1–BH4) and Girls Hostels (GH1–GH3) room allocations, capacity tracking, and assigned warden contact channels.
+            <h4 className="font-bold text-slate-800 text-lg mb-2">Leave Management Engine</h4>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Automated multi-day leave applications, date overlap validation, hierarchy routing (Mentors, Wardens, HODs), dynamic quota balances, and full audit logs.
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
-            <div className="w-12 h-12 bg-spsu-lightBlue rounded-xl flex items-center justify-center text-spsu-blue mb-4">
-              <Users size={24} />
+          {/* v3.0 */}
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600">
+                <Ticket size={24} />
+              </div>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-100 text-purple-800">v3.0 Events & Passes</span>
             </div>
-            <h4 className="font-bold text-slate-800 text-lg mb-2">Faculty Mentorship Mapping</h4>
-            <p className="text-sm text-slate-600">
-              Direct 1:N faculty mentor-to-mentee assignments ensuring student academic progress and pastoral care are prioritized.
+            <h4 className="font-bold text-slate-800 text-lg mb-2">Events & Outing Gate Passes</h4>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Campus event catalog with capacity-limited RSVPs, participant Excel export, gate passes with dual Warden & Parent sign-off, and leave overlap conflict checks.
+            </p>
+          </div>
+
+          {/* v3.5 */}
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+                <LifeBuoy size={24} />
+              </div>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800">v3.5 Grievances</span>
+            </div>
+            <h4 className="font-bold text-slate-800 text-lg mb-2">Grievance & Redressal Desk</h4>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Transparent ticket tracking (GRV-2026-XXXX), anonymous reporting toggle, direct zero-tolerance Anti-Ragging escalation to Designated Authority, and internal notes.
+            </p>
+          </div>
+
+          {/* v4.0 Notice Board */}
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600">
+                <Bell size={24} />
+              </div>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800">v4.0 Notices</span>
+            </div>
+            <h4 className="font-bold text-slate-800 text-lg mb-2">Campus Circulars & Notices</h4>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Audience-targeted university notices with urgent priority and pinned announcements for examination schedules, campus emergencies, and hostel guidelines.
+            </p>
+          </div>
+
+          {/* v4.0 Unified Notifications */}
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center text-sky-600">
+                <Sparkles size={24} />
+              </div>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-sky-100 text-sky-800">v4.0 Alerts</span>
+            </div>
+            <h4 className="font-bold text-slate-800 text-lg mb-2">Unified In-App Alerts</h4>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Top navigation notification bell with real-time unread counter, instant status triggers for leaves, gate passes, grievance replies, and urgent circulars.
             </p>
           </div>
         </div>
@@ -129,23 +189,23 @@ export const Landing: React.FC = () => {
       <section id="roles" className="py-16 px-6 md:px-12 bg-white border-t border-slate-200">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <span className="text-xs font-bold text-spsu-blue uppercase tracking-wider">Granular Security</span>
+            <span className="text-xs font-bold text-[#0057B8] uppercase tracking-wider">Granular Security</span>
             <h3 className="text-2xl font-bold text-spsu-navy mt-1">7 Role-Based Portals</h3>
             <p className="text-slate-500 text-sm mt-1">Pre-configured demo accounts are available on the login page</p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { role: 'ADMIN', desc: 'Full SIS control, student/staff CRUD, Excel batch import/export, department & hostel setup.' },
-              { role: 'STUDENT', desc: 'Academic profile, semester & branch, CGPA, assigned mentor and hostel room info.' },
-              { role: 'FACULTY', desc: 'Departmental curriculum, student directory search, academic information.' },
-              { role: 'MENTOR', desc: 'Assigned student mentees list, academic guidance and progress tracking.' },
-              { role: 'WARDEN', desc: 'Hostel block management, resident directory, room occupancy metrics.' },
-              { role: 'HOD', desc: 'Department-wide faculty roster, student breakdown, academic overview.' },
-              { role: 'PARENT', desc: 'Direct visibility into child academic standing, hostel info, and mentor contacts.' },
+              { role: 'ADMIN', desc: 'Full SIS control, student/staff CRUD, Excel batch import/export, leave policies, grievance desk, notice board, and sensitive cases designated authority.' },
+              { role: 'STUDENT', desc: 'Academic profile, hostel room, leave applications, gate passes, event RSVP, grievance portal (with anonymous option), and campus notices.' },
+              { role: 'FACULTY', desc: 'Faculty dashboard, campus events publishing, participant roster export, student directory, leave approvals, and grievance desk.' },
+              { role: 'MENTOR', desc: 'Assigned student mentees list, academic guidance, mentee leave approvals queue, and grievance desk.' },
+              { role: 'WARDEN', desc: 'Hostel block management, resident directory, hostel leave approvals, resident outing gate pass review, and grievance resolution.' },
+              { role: 'HOD', desc: 'Department-wide faculty roster, student breakdown, academic overview, campus events, and department leave approvals.' },
+              { role: 'PARENT', desc: 'Direct visibility into child academic standing, hostel info, overnight outing pass sign-off authorization, and campus circulars.' },
             ].map((item) => (
               <div key={item.role} className="p-4 rounded-xl border border-slate-200 bg-slate-50/70">
-                <span className="px-2 py-0.5 rounded text-xs font-bold bg-spsu-lightBlue text-spsu-blue border border-blue-200">
+                <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-50 text-[#0057B8] border border-blue-200">
                   {item.role}
                 </span>
                 <p className="text-xs text-slate-600 mt-2.5 leading-relaxed">{item.desc}</p>
@@ -158,7 +218,7 @@ export const Landing: React.FC = () => {
       {/* Footer */}
       <footer className="mt-auto bg-spsu-navy text-slate-300 py-8 px-6 text-center text-xs">
         <p className="font-semibold text-white">Sir Padampat Singhania University (SPSU), Udaipur</p>
-        <p className="text-slate-400 mt-1">A JK Cement Initiative • Digital Campus Management Initiative (SIS v1.0)</p>
+        <p className="text-slate-400 mt-1">A JK Cement Initiative • Digital Campus Management Suite (Release v4.0 Complete)</p>
       </footer>
     </div>
   );
