@@ -2,8 +2,10 @@ import { Request, Response } from 'express';
 import { Student } from '../models/Student.js';
 import { User } from '../models/User.js';
 import { Hostel } from '../models/Hostel.js';
+import { AuditLog } from '../models/AuditLog.js';
 import { cache } from '../config/redis.js';
 import { exportStudentsToExcel } from '../services/bulkImportService.js';
+import { AuthRequest } from '../middlewares/auth.js';
 
 export const getStudents = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -278,5 +280,47 @@ export const exportStudents = async (req: Request, res: Response): Promise<void>
     res.send(buffer);
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Error generating export file' });
+  }
+};
+
+export const toggleStudentStatus = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+      res.status(404).json({ success: false, message: 'Student profile not found' });
+      return;
+    }
+
+    const user = await User.findById(student.user);
+    if (!user) {
+      res.status(404).json({ success: false, message: 'Linked user record not found' });
+      return;
+    }
+
+    const prevState = user.isActive;
+    user.isActive = !user.isActive;
+    await user.save();
+
+    await AuditLog.create({
+      actor: req.user!.id,
+      actorRole: req.user!.role,
+      actorEmail: req.user!.email,
+      action: user.isActive ? 'STUDENT_ACTIVATED' : 'STUDENT_DEACTIVATED',
+      resourceType: 'Student',
+      resourceId: student._id.toString(),
+      previousState: { isActive: prevState },
+      newState: { isActive: user.isActive },
+      comment: `Student profile status changed to ${user.isActive ? 'Active' : 'Inactive'}`,
+    });
+
+    await cache.del('admin:stats');
+
+    res.status(200).json({
+      success: true,
+      message: `Student account marked as ${user.isActive ? 'Active' : 'Inactive'}`,
+      data: { id: student._id, isActive: user.isActive },
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message || 'Error toggling student status' });
   }
 };

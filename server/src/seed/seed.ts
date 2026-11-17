@@ -15,6 +15,12 @@ import { PermissionRequest } from '../models/PermissionRequest.js';
 import { Complaint } from '../models/Complaint.js';
 import { Notice } from '../models/Notice.js';
 import { Notification } from '../models/Notification.js';
+import { Subject } from '../models/Subject.js';
+import { Timetable } from '../models/Timetable.js';
+import { Attendance } from '../models/Attendance.js';
+import { LibraryBook } from '../models/LibraryBook.js';
+import { PlacementDrive } from '../models/PlacementDrive.js';
+import { VisitorLog } from '../models/VisitorLog.js';
 
 export const seedDatabase = async (disconnectAfter: boolean = true) => {
   try {
@@ -41,6 +47,12 @@ export const seedDatabase = async (disconnectAfter: boolean = true) => {
       Complaint.deleteMany({}),
       Notice.deleteMany({}),
       Notification.deleteMany({}),
+      Subject.deleteMany({}),
+      Timetable.deleteMany({}),
+      Attendance.deleteMany({}),
+      LibraryBook.deleteMany({}),
+      PlacementDrive.deleteMany({}),
+      VisitorLog.deleteMany({}),
     ]);
 
     // 1. Create Departments
@@ -747,6 +759,221 @@ export const seedDatabase = async (disconnectAfter: boolean = true) => {
       sourceModule: 'Complaint',
       link: '/complaints/manage?ticket=GRV-2026-0002',
       isRead: false,
+    });
+
+    // 17. Seed Subjects & Timetable (v5.0 Attendance & Timetable)
+    console.log('📚 Creating Academic Subjects & Timetable (v5.0)...');
+    const dsaSubject = await Subject.create({
+      name: 'Data Structures and Algorithms',
+      code: 'CS201',
+      department: deptCse._id,
+      semester: 4,
+      credits: 4,
+      type: 'Theory',
+      isActive: true,
+    });
+
+    const osSubject = await Subject.create({
+      name: 'Operating Systems',
+      code: 'CS202',
+      department: deptCse._id,
+      semester: 4,
+      credits: 4,
+      type: 'Theory',
+      isActive: true,
+    });
+
+    const dbmsSubject = await Subject.create({
+      name: 'Database Management Systems',
+      code: 'CS203',
+      department: deptCse._id,
+      semester: 4,
+      credits: 4,
+      type: 'Theory',
+      isActive: true,
+    });
+
+    const dsaLab = await Subject.create({
+      name: 'Data Structures Lab',
+      code: 'CS204',
+      department: deptCse._id,
+      semester: 4,
+      credits: 2,
+      type: 'Practical',
+      isActive: true,
+    });
+
+    // Seed Timetable for CSE Sem 4 Sec A
+    await Timetable.create({
+      department: deptCse._id,
+      semester: 4,
+      section: 'A',
+      academicYear: new Date().getFullYear(),
+      slots: [
+        {
+          dayOfWeek: 'Monday',
+          startTime: '09:00',
+          endTime: '10:00',
+          subject: dsaSubject._id,
+          faculty: facultyUser._id,
+          room: 'LT-101',
+        },
+        {
+          dayOfWeek: 'Monday',
+          startTime: '10:00',
+          endTime: '11:00',
+          subject: osSubject._id,
+          faculty: mentorUser._id,
+          room: 'LT-101',
+        },
+        {
+          dayOfWeek: 'Tuesday',
+          startTime: '09:00',
+          endTime: '10:00',
+          subject: dbmsSubject._id,
+          faculty: hodUser._id,
+          room: 'LT-102',
+        },
+        {
+          dayOfWeek: 'Wednesday',
+          startTime: '14:00',
+          endTime: '16:00',
+          subject: dsaLab._id,
+          faculty: facultyUser._id,
+          room: 'Computing Lab 2',
+        },
+      ],
+    });
+
+    // Seed Initial Attendance Records for student1
+    console.log('📝 Marking initial Attendance Records (v5.0)...');
+    const pastDate = new Date();
+    pastDate.setDate(pastDate.getDate() - 1);
+    pastDate.setHours(0, 0, 0, 0);
+
+    await Attendance.create({
+      subject: dsaSubject._id,
+      department: deptCse._id,
+      semester: 4,
+      section: 'A',
+      faculty: facultyUser._id,
+      date: pastDate,
+      timeSlot: { startTime: '09:00', endTime: '10:00' },
+      records: [
+        {
+          student: student1._id,
+          status: 'Present',
+          remarks: 'Attended lecture',
+        },
+      ],
+      totalStudents: 1,
+      presentCount: 1,
+      absentCount: 0,
+      onLeaveCount: 0,
+      isLocked: false,
+    });
+
+    await Attendance.create({
+      subject: osSubject._id,
+      department: deptCse._id,
+      semester: 4,
+      section: 'A',
+      faculty: mentorUser._id,
+      date: pastDate,
+      timeSlot: { startTime: '10:00', endTime: '11:00' },
+      records: [
+        {
+          student: student1._id,
+          status: 'Present',
+          remarks: 'Attended lecture',
+        },
+      ],
+      totalStudents: 1,
+      presentCount: 1,
+      absentCount: 0,
+      onLeaveCount: 0,
+      isLocked: false,
+    });
+
+    // 21. Create Campus Library Books (v7.0)
+    console.log('📚 Cataloging Library Books (v7.0)...');
+    await LibraryBook.insertMany([
+      {
+        title: 'Introduction to Algorithms (4th Edition)',
+        author: 'Thomas H. Cormen, Charles E. Leiserson',
+        isbn: '978-0262046305',
+        category: 'Computer Science & Engineering',
+        totalCopies: 10,
+        availableCopies: 9,
+        shelfLocation: 'Stack CS-101',
+      },
+      {
+        title: 'Database System Concepts (7th Edition)',
+        author: 'Abraham Silberschatz, Henry F. Korth',
+        isbn: '978-0078022159',
+        category: 'Computer Science & Engineering',
+        totalCopies: 8,
+        availableCopies: 8,
+        shelfLocation: 'Stack CS-204',
+      },
+      {
+        title: 'Principles of Modern Manufacturing',
+        author: 'Mikell P. Groover',
+        isbn: '978-1119128694',
+        category: 'Mechanical Engineering',
+        totalCopies: 6,
+        availableCopies: 6,
+        shelfLocation: 'Stack ME-102',
+      },
+    ]);
+
+    // 22. Create Training & Placement Drives (v7.0)
+    console.log('💼 Scheduling Placement Drives (v7.0)...');
+    const driveDeadline = new Date();
+    driveDeadline.setDate(driveDeadline.getDate() + 15);
+    const driveDate = new Date();
+    driveDate.setDate(driveDate.getDate() + 25);
+
+    await PlacementDrive.insertMany([
+      {
+        companyName: 'TCS Digital',
+        roleTitle: 'Systems Engineer & Cloud Associate',
+        ctcPackageLPA: 7.5,
+        eligibilityCgpa: 7.0,
+        eligibleDepartments: [deptCse._id, deptEce._id],
+        driveDate,
+        registrationDeadline: driveDeadline,
+        location: 'Virtual / Online Assessment + Campus PI',
+        description: 'Elite technical stream hiring across Fullstack, Cloud, and Data Engineering roles.',
+        status: 'Active',
+      },
+      {
+        companyName: 'JK Cement Technology Division',
+        roleTitle: 'Graduate Engineer Trainee (GET)',
+        ctcPackageLPA: 6.5,
+        eligibilityCgpa: 6.0,
+        eligibleDepartments: [deptCse._id, deptMe._id],
+        driveDate,
+        registrationDeadline: driveDeadline,
+        location: 'SPSU Campus Auditorium',
+        description: 'Industrial automation, IIoT, and enterprise software engineering program.',
+        status: 'Active',
+      },
+    ]);
+
+    // 23. Create Hostel Visitor Log (v7.0)
+    console.log('🚪 Creating Hostel Visitor Log (v7.0)...');
+    await VisitorLog.create({
+      visitorName: 'Mr. Ramesh Verma',
+      phone: '+91 94140 12345',
+      relation: 'Parent / Father',
+      studentVisited: student1._id,
+      hostelBlock: hostelBh2._id,
+      purpose: 'Semester progress discussion & hostel visit',
+      checkIn: new Date(),
+      gateNumber: 'Gate 1 (Main Entrance)',
+      recordedBy: wardenUser._id,
+      status: 'Inside',
     });
 
     console.log('✅ Database seeding finished successfully!');

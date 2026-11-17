@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Badge } from './Badge';
-import { LogOut, User as UserIcon, Bell, Check, ExternalLink } from 'lucide-react';
+import { LogOut, User as UserIcon, Bell, Check, ExternalLink, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { communicationService } from '../services/communicationService';
 import { IAppNotification } from '../types/communication';
+import { AIChatModal } from './AIChatModal';
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
@@ -17,6 +18,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
   const [notifications, setNotifications] = useState<IAppNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const fetchNotifications = async () => {
@@ -93,6 +95,16 @@ export const Navbar: React.FC<NavbarProps> = () => {
       </div>
 
       <div className="flex items-center gap-3">
+        {/* SPSU AI Campus Assistant (AI-004) */}
+        <button
+          onClick={() => setIsAiModalOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-semibold shadow-xs transition-all hover:shadow-md cursor-pointer"
+          title="SPSU Campus AI Assistant (v6.0)"
+        >
+          <Sparkles size={14} className="animate-pulse" />
+          <span className="hidden sm:inline">AI Assistant</span>
+        </button>
+
         {/* Notifications Dropdown (COM-006) */}
         <div className="relative" ref={dropdownRef}>
           <button
@@ -202,6 +214,8 @@ export const Navbar: React.FC<NavbarProps> = () => {
           </div>
         )}
       </div>
+
+      <AIChatModal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} />
     </header>
   );
 };

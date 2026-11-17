@@ -17,6 +17,11 @@ import {
   Ticket,
   LifeBuoy,
   Bell,
+  CalendarCheck2,
+  AlertTriangle,
+  BookOpen,
+  Briefcase,
+  DoorOpen,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -34,25 +39,35 @@ export const Sidebar: React.FC = () => {
           { label: 'Staff Management', path: '/admin/staff', icon: <Users size={18} /> },
           { label: 'Departments', path: '/admin/departments', icon: <Building2 size={18} /> },
           { label: 'Hostel Blocks', path: '/admin/hostels', icon: <Home size={18} /> },
+          { label: 'Timetable & Curriculum', path: '/admin/timetable', icon: <CalendarCheck2 size={18} /> },
           { label: 'Leave Administration', path: '/admin/leaves', icon: <CalendarCheck size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
           { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
           { label: 'Grievance Redressal', path: '/complaints/manage', icon: <LifeBuoy size={18} /> },
+          { label: 'Central Library', path: '/library', icon: <BookOpen size={18} /> },
+          { label: 'Campus Placements', path: '/placements', icon: <Briefcase size={18} /> },
+          { label: 'Visitor Register', path: '/warden/visitors', icon: <DoorOpen size={18} /> },
           { label: 'Approvals Queue', path: '/approver/leaves', icon: <Clock size={18} /> },
         ];
       case 'STUDENT':
         return [
           { label: 'My Student Portal', path: '/student', icon: <GraduationCap size={18} /> },
+          { label: 'Attendance & Schedule', path: '/student/attendance', icon: <CalendarCheck2 size={18} /> },
+          { label: 'Academics & ID Card', path: '/student/results', icon: <Award size={18} /> },
           { label: 'Mentor & Residential', path: '/student/hostel-mentor', icon: <Home size={18} /> },
           { label: 'Leave Applications', path: '/student/leaves', icon: <CalendarCheck size={18} /> },
           { label: 'Gate Pass & Outings', path: '/student/permissions', icon: <Ticket size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
           { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
+          { label: 'Central Library', path: '/library', icon: <BookOpen size={18} /> },
+          { label: 'Campus Placements', path: '/placements', icon: <Briefcase size={18} /> },
           { label: 'Grievance Portal', path: '/complaints', icon: <LifeBuoy size={18} /> },
         ];
       case 'FACULTY':
         return [
           { label: 'Faculty Dashboard', path: '/faculty', icon: <LayoutDashboard size={18} /> },
+          { label: 'Mark Attendance', path: '/faculty/attendance', icon: <CalendarCheck2 size={18} /> },
+          { label: 'Enter Marks & Grades', path: '/faculty/marks', icon: <Award size={18} /> },
           { label: 'Students Directory', path: '/faculty/students', icon: <GraduationCap size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
           { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
@@ -62,6 +77,7 @@ export const Sidebar: React.FC = () => {
       case 'MENTOR':
         return [
           { label: 'Mentor Portal', path: '/mentor', icon: <UserCheck size={18} /> },
+          { label: 'AI Needs Attention', path: '/mentor/attention-list', icon: <AlertTriangle size={18} /> },
           { label: 'Assigned Mentees', path: '/mentor/mentees', icon: <GraduationCap size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
           { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
@@ -71,6 +87,7 @@ export const Sidebar: React.FC = () => {
       case 'WARDEN':
         return [
           { label: 'Hostel Dashboard', path: '/warden', icon: <Home size={18} /> },
+          { label: 'Gate & Visitor Log', path: '/warden/visitors', icon: <DoorOpen size={18} /> },
           { label: 'Resident Directory', path: '/warden/residents', icon: <Users size={18} /> },
           { label: 'Resident Gate Passes', path: '/warden/permissions', icon: <Ticket size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
@@ -81,6 +98,9 @@ export const Sidebar: React.FC = () => {
       case 'HOD':
         return [
           { label: 'HOD Overview', path: '/hod', icon: <Award size={18} /> },
+          { label: 'AI Needs Attention', path: '/hod/attention-list', icon: <AlertTriangle size={18} /> },
+          { label: 'Department Analytics', path: '/hod/analytics', icon: <Building2 size={18} /> },
+          { label: 'Timetable & Subjects', path: '/admin/timetable', icon: <CalendarCheck2 size={18} /> },
           { label: 'Faculty Roster', path: '/hod/faculty', icon: <Users size={18} /> },
           { label: 'Department Students', path: '/hod/students', icon: <GraduationCap size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
@@ -91,8 +111,12 @@ export const Sidebar: React.FC = () => {
       case 'PARENT':
         return [
           { label: 'Parent Portal', path: '/parent', icon: <Shield size={18} /> },
+          { label: 'Child Attendance', path: '/student/attendance', icon: <CalendarCheck2 size={18} /> },
+          { label: 'Academic Results', path: '/student/results', icon: <Award size={18} /> },
           { label: 'Campus Events', path: '/events', icon: <Sparkles size={18} /> },
           { label: 'Notice Board', path: '/notices', icon: <Bell size={18} /> },
+          { label: 'Central Library', path: '/library', icon: <BookOpen size={18} /> },
+          { label: 'Campus Placements', path: '/placements', icon: <Briefcase size={18} /> },
           { label: 'Grievance Portal', path: '/complaints', icon: <LifeBuoy size={18} /> },
         ];
       default:

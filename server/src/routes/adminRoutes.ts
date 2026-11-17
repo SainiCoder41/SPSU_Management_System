@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { getStats, importStudents } from '../controllers/adminController.js';
+import { getStats, importStudents, getAuditLogs } from '../controllers/adminController.js';
 import { authenticate } from '../middlewares/auth.js';
 import { authorizeRoles } from '../middlewares/roles.js';
 
@@ -14,6 +14,7 @@ const router = Router();
 router.use(authenticate, authorizeRoles('ADMIN'));
 
 router.get('/stats', getStats);
+router.get('/audit-logs', getAuditLogs);
 router.post('/import/students', upload.single('file'), importStudents);
 
 export default router;

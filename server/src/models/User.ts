@@ -7,10 +7,18 @@ export interface IUserDocument extends Document {
   email: string;
   password?: string;
   role: Role;
+  secondaryRoles?: Role[];
   phone?: string;
   isActive: boolean;
   avatar?: string;
+  failedLoginAttempts: number;
+  lockUntil?: Date | null;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
+  passwordChangedAt?: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  isLocked(): boolean;
+  hasRole(targetRole: Role): boolean;
 }
 
 const UserSchema = new Schema<IUserDocument>(
@@ -36,10 +44,16 @@ const UserSchema = new Schema<IUserDocument>(
     },
     role: {
       type: String,
-      enum: ['ADMIN', 'STUDENT', 'FACULTY', 'MENTOR', 'WARDEN', 'HOD', 'PARENT'],
+      enum: ['ADMIN', 'STUDENT', 'FACULTY', 'MENTOR', 'WARDEN', 'HOD', 'PARENT', 'COMPLAINT_OWNER', 'DESIGNATED_AUTHORITY'],
       required: true,
       index: true,
     },
+    secondaryRoles: [
+      {
+        type: String,
+        enum: ['ADMIN', 'STUDENT', 'FACULTY', 'MENTOR', 'WARDEN', 'HOD', 'PARENT', 'COMPLAINT_OWNER', 'DESIGNATED_AUTHORITY'],
+      },
+    ],
     phone: {
       type: String,
       trim: true,
@@ -47,10 +61,30 @@ const UserSchema = new Schema<IUserDocument>(
     isActive: {
       type: Boolean,
       default: true,
+      index: true,
     },
     avatar: {
       type: String,
       default: '',
+    },
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+      default: null,
+    },
+    passwordResetToken: {
+      type: String,
+      select: false,
+    },
+    passwordResetExpires: {
+      type: Date,
+      select: false,
+    },
+    passwordChangedAt: {
+      type: Date,
     },
   },
   {
@@ -75,6 +109,18 @@ UserSchema.pre('save', async function (next) {
 // Compare password method
 UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+// Check if account is temporarily locked (NFR-004)
+UserSchema.methods.isLocked = function (): boolean {
+  return !!(this.lockUntil && this.lockUntil > new Date());
+};
+
+// Check role or secondary role (SH-003)
+UserSchema.methods.hasRole = function (targetRole: Role): boolean {
+  if (this.role === targetRole) return true;
+  if (this.secondaryRoles && this.secondaryRoles.includes(targetRole)) return true;
+  return false;
 };
 
 export const User = mongoose.model<IUserDocument>('User', UserSchema);

@@ -9,6 +9,7 @@ export interface AuthRequest extends Request {
     id: string;
     email: string;
     role: Role;
+    secondaryRoles?: Role[];
     name: string;
   };
 }
@@ -29,7 +30,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     const decoded = jwt.verify(token, ENV.JWT_SECRET) as { id: string; role: Role; email: string };
     
     // Check if user still exists and isActive
-    const user = await User.findById(decoded.id).select('name email role isActive');
+    const user = await User.findById(decoded.id).select('name email role secondaryRoles isActive');
     if (!user || !user.isActive) {
       res.status(401).json({ success: false, message: 'User session is invalid or user is inactive.' });
       return;
@@ -39,6 +40,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
       id: user._id.toString(),
       email: user.email,
       role: user.role,
+      secondaryRoles: user.secondaryRoles || [],
       name: user.name,
     };
 

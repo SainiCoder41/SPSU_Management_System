@@ -6,6 +6,7 @@ import {
   updateStudent,
   deleteStudent,
   exportStudents,
+  toggleStudentStatus,
 } from '../controllers/studentController.js';
 import { authenticate } from '../middlewares/auth.js';
 import { authorizeRoles } from '../middlewares/roles.js';
@@ -25,6 +26,7 @@ router.post('/', authorizeRoles('ADMIN'), validateRequest(studentCreateSchema), 
 
 router.get('/:id', authorizeRoles('ADMIN', 'FACULTY', 'MENTOR', 'HOD', 'WARDEN', 'STUDENT'), getStudentById);
 router.put('/:id', authorizeRoles('ADMIN'), validateRequest(studentUpdateSchema), updateStudent);
+router.patch('/:id/toggle-status', authorizeRoles('ADMIN'), toggleStudentStatus);
 router.delete('/:id', authorizeRoles('ADMIN'), deleteStudent);
 
 export default router;

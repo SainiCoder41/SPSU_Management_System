@@ -35,6 +35,16 @@ import { EventsCatalog } from '../pages/events/EventsCatalog';
 import { ComplaintPortal } from '../pages/complaints/ComplaintPortal';
 import { ComplaintManagement } from '../pages/complaints/ComplaintManagement';
 import { NoticeBoard } from '../pages/communication/NoticeBoard';
+import { StudentAttendance } from '../pages/attendance/StudentAttendance';
+import { FacultyAttendance } from '../pages/attendance/FacultyAttendance';
+import { TimetableManagement } from '../pages/attendance/TimetableManagement';
+import { StudentResults } from '../pages/academics/StudentResults';
+import { FacultyMarksEntry } from '../pages/academics/FacultyMarksEntry';
+import { DepartmentAnalytics } from '../pages/academics/DepartmentAnalytics';
+import { MentorAttentionList } from '../pages/ai/MentorAttentionList';
+import { LibraryCatalog } from '../pages/services/LibraryCatalog';
+import { PlacementPortal } from '../pages/services/PlacementPortal';
+import { HostelVisitorLog } from '../pages/services/HostelVisitorLog';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -55,9 +65,16 @@ export const AppRoutes: React.FC = () => {
             <Route path="/admin/departments" element={<DepartmentManagement />} />
             <Route path="/admin/hostels" element={<HostelManagement />} />
             <Route path="/admin/leaves" element={<LeaveManagement />} />
+            <Route path="/admin/timetable" element={<TimetableManagement />} />
           </Route>
 
-          {/* Student Routes */}
+          {/* Student & Parent Shared Academic & Attendance Routes */}
+          <Route element={<RoleRoute allowedRoles={['STUDENT', 'PARENT']} />}>
+            <Route path="/student/attendance" element={<StudentAttendance />} />
+            <Route path="/student/results" element={<StudentResults />} />
+          </Route>
+
+          {/* Student-only Routes */}
           <Route element={<RoleRoute allowedRoles={['STUDENT']} />}>
             <Route path="/student" element={<StudentDashboard />} />
             <Route path="/student/hostel-mentor" element={<StudentHostelMentor />} />
@@ -68,6 +85,8 @@ export const AppRoutes: React.FC = () => {
           {/* Campus Events & Notice Board (Accessible to All Authenticated Roles) */}
           <Route path="/events" element={<EventsCatalog />} />
           <Route path="/notices" element={<NoticeBoard />} />
+          <Route path="/library" element={<LibraryCatalog />} />
+          <Route path="/placements" element={<PlacementPortal />} />
 
           {/* Grievance Portal for Submissions */}
           <Route path="/complaints" element={<ComplaintPortal />} />
@@ -91,18 +110,22 @@ export const AppRoutes: React.FC = () => {
           <Route element={<RoleRoute allowedRoles={['FACULTY', 'ADMIN']} />}>
             <Route path="/faculty" element={<FacultyDashboard />} />
             <Route path="/faculty/students" element={<FacultyDashboard />} />
+            <Route path="/faculty/attendance" element={<FacultyAttendance />} />
+            <Route path="/faculty/marks" element={<FacultyMarksEntry />} />
           </Route>
 
           {/* Mentor Routes */}
           <Route element={<RoleRoute allowedRoles={['MENTOR', 'ADMIN']} />}>
             <Route path="/mentor" element={<MentorDashboard />} />
             <Route path="/mentor/mentees" element={<MentorDashboard />} />
+            <Route path="/mentor/attention-list" element={<MentorAttentionList />} />
           </Route>
 
           {/* Warden Routes */}
           <Route element={<RoleRoute allowedRoles={['WARDEN', 'ADMIN']} />}>
             <Route path="/warden" element={<WardenDashboard />} />
             <Route path="/warden/residents" element={<WardenDashboard />} />
+            <Route path="/warden/visitors" element={<HostelVisitorLog />} />
           </Route>
 
           {/* HOD Routes */}
@@ -110,6 +133,8 @@ export const AppRoutes: React.FC = () => {
             <Route path="/hod" element={<HodDashboard />} />
             <Route path="/hod/faculty" element={<HodDashboard />} />
             <Route path="/hod/students" element={<HodDashboard />} />
+            <Route path="/hod/analytics" element={<DepartmentAnalytics />} />
+            <Route path="/hod/attention-list" element={<MentorAttentionList />} />
           </Route>
 
           {/* Parent Routes */}

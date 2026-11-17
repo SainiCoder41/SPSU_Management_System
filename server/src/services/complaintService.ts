@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { Complaint, IComplaintDocument, ComplaintCategory, ComplaintStatus, User } from '../models/index.js';
 import { NotificationService } from './notificationService.js';
+import { AIWorkflowService } from './aiWorkflowService.js';
 
 export class AppError extends Error {
   statusCode: number;
@@ -35,7 +36,9 @@ export class ComplaintService {
       assignedDepartment?: string;
     }
   ): Promise<IComplaintDocument> {
-    const isSensitive = data.category === 'Ragging / Harassment';
+    const nlpResult = AIWorkflowService.classifyComplaint(data.title, data.description);
+    const isSensitive = data.category === 'Ragging / Harassment' || nlpResult.isRaggingSuspected;
+    const finalCategory = isSensitive ? 'Ragging / Harassment' : data.category;
     const ticketNumber = await this.generateTicketNumber();
 
     // Find Designated Authority (Admin) if sensitive
@@ -49,7 +52,7 @@ export class ComplaintService {
       ticketNumber,
       complainant: new mongoose.Types.ObjectId(complainantId),
       isAnonymous: !!data.isAnonymous,
-      category: data.category,
+      category: finalCategory,
       isSensitive,
       title: data.title,
       description: data.description,

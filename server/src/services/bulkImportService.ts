@@ -189,3 +189,130 @@ export const exportStudentsToExcel = async (filter: any = {}): Promise<Buffer> =
 
   return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 };
+
+export const parseAndImportStaff = async (fileBuffer: Buffer): Promise<ImportResult> => {
+  const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+  const sheetName = workbook.SheetNames[0];
+  const worksheet = workbook.Sheets[sheetName];
+  const rows: any[] = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+  const result: ImportResult = {
+    totalRows: rows.length,
+    importedCount: 0,
+    errors: [],
+  };
+
+  if (!rows || rows.length === 0) {
+    return result;
+  }
+
+  const departments = await Department.find();
+  const deptMap = new Map<string, any>();
+  departments.forEach((d) => {
+    deptMap.set(d.code.toUpperCase(), d._id);
+    deptMap.set(d.name.toLowerCase(), d._id);
+  });
+
+  const existingEmails = new Set(
+    (await User.find().select('email')).map((u) => u.email.toLowerCase())
+  );
+  const existingEmpIds = new Set(
+    (await Staff.find().select('employeeId')).map((s) => s.employeeId.toUpperCase())
+  );
+
+  const seenInBatchEmails = new Set<string>();
+  const seenInBatchEmpIds = new Set<string>();
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const rowIndex = i + 2;
+
+    try {
+      const name = String(row['Name'] || row['name'] || '').trim();
+      const email = String(row['Email'] || row['email'] || '').trim().toLowerCase();
+      const employeeId = String(row['EmployeeId'] || row['Employee ID'] || row['employeeId'] || '').trim().toUpperCase();
+      const deptCode = String(row['Department'] || row['department'] || 'CSE').trim().toUpperCase();
+      const designation = String(row['Designation'] || row['designation'] || 'Assistant Professor').trim();
+      const roleStr = String(row['Role'] || row['role'] || 'FACULTY').trim().toUpperCase();
+      const specialization = String(row['Specialization'] || row['specialization'] || '').trim();
+      const officeLocation = String(row['OfficeLocation'] || row['Office Location'] || row['officeLocation'] || '').trim();
+      const phone = String(row['Phone'] || row['phone'] || '').trim();
+
+      if (!name || !email || !employeeId) {
+        throw new Error('Name, Email, and Employee ID are mandatory fields');
+      }
+
+      // Duplicate detection in sheet and in DB (SIS-008)
+      if (existingEmails.has(email) || seenInBatchEmails.has(email)) {
+        throw new Error(`Duplicate email '${email}' detected`);
+      }
+      if (existingEmpIds.has(employeeId) || seenInBatchEmpIds.has(employeeId)) {
+        throw new Error(`Duplicate Employee ID '${employeeId}' detected`);
+      }
+
+      seenInBatchEmails.add(email);
+      seenInBatchEmpIds.add(employeeId);
+
+      const deptId = deptMap.get(deptCode) || departments[0]?._id;
+
+      const validRoles = ['ADMIN', 'FACULTY', 'MENTOR', 'WARDEN', 'HOD'];
+      const assignedRole = validRoles.includes(roleStr) ? roleStr : 'FACULTY';
+
+      const user = new User({
+        name,
+        email,
+        password: 'Staff@1234',
+        role: assignedRole,
+        phone,
+        isActive: true,
+      });
+      await user.save();
+
+      const staff = new Staff({
+        user: user._id,
+        employeeId,
+        department: deptId,
+        designation,
+        specialization,
+        officeLocation,
+      });
+      await staff.save();
+
+      result.importedCount++;
+    } catch (err: any) {
+      result.errors.push({
+        row: rowIndex,
+        error: err.message || 'Error processing staff record',
+        data: row,
+      });
+    }
+  }
+
+  return result;
+};
+
+export const exportStaffToExcel = async (): Promise<Buffer> => {
+  const staffMembers = await Staff.find()
+    .populate('user', 'name email phone role isActive')
+    .populate('department', 'name code');
+
+  const rows = staffMembers.map((s: any) => ({
+    'Employee ID': s.employeeId,
+    'Full Name': s.user?.name || '',
+    'Email Address': s.user?.email || '',
+    'Role': s.user?.role || 'FACULTY',
+    'Department': s.department?.code || '',
+    'Department Name': s.department?.name || '',
+    'Designation': s.designation || '',
+    'Specialization': s.specialization || '',
+    'Office Location': s.officeLocation || '',
+    'Phone': s.user?.phone || '',
+    'Status': s.user?.isActive ? 'Active' : 'Inactive',
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(rows);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Staff');
+
+  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+};

@@ -5,6 +5,7 @@ import { Department } from '../models/Department.js';
 import { Hostel } from '../models/Hostel.js';
 import { User } from '../models/User.js';
 import { cache } from '../config/redis.js';
+import { AuditLog } from '../models/AuditLog.js';
 import { parseAndImportStudents } from '../services/bulkImportService.js';
 
 export const getStats = async (req: Request, res: Response): Promise<void> => {
@@ -108,5 +109,25 @@ export const importStudents = async (req: Request, res: Response): Promise<void>
     });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to process file import' });
+  }
+};
+
+export const getAuditLogs = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { resourceType, resourceId, action, limit } = req.query;
+    const filter: any = {};
+    if (resourceType) filter.resourceType = resourceType;
+    if (resourceId) filter.resourceId = resourceId;
+    if (action) filter.action = action;
+
+    const logs = await AuditLog.find(filter)
+      .populate('actor', 'name email role')
+      .sort({ createdAt: -1 })
+      .limit(Number(limit) || 100)
+      .lean();
+
+    res.status(200).json({ success: true, count: logs.length, data: logs });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message || 'Error fetching audit logs' });
   }
 };

@@ -1,4 +1,13 @@
-export type Role = 'ADMIN' | 'STUDENT' | 'FACULTY' | 'MENTOR' | 'WARDEN' | 'HOD' | 'PARENT';
+export type Role =
+  | 'ADMIN'
+  | 'STUDENT'
+  | 'FACULTY'
+  | 'MENTOR'
+  | 'WARDEN'
+  | 'HOD'
+  | 'PARENT'
+  | 'COMPLAINT_OWNER'
+  | 'DESIGNATED_AUTHORITY';
 
 export interface IUser {
   _id: string;
@@ -6,9 +15,13 @@ export interface IUser {
   email: string;
   password?: string;
   role: Role;
+  secondaryRoles?: Role[];
   phone?: string;
   isActive: boolean;
   avatar?: string;
+  failedLoginAttempts?: number;
+  lockUntil?: Date;
+  passwordChangedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,0 +1,17 @@
+{
+  "short_name": "SPSU Portal",
+  "name": "Sir Padampat Singhania University Campus Management System",
+  "description": "Comprehensive role-based university ERP & campus life management suite",
+  "icons": [
+    {
+      "src": "/spsu-logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0B2545",
+  "theme_color": "#0057B8",
+  "display": "standalone",
+  "orientation": "portrait"
+}

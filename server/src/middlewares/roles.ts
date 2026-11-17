@@ -9,10 +9,13 @@ export const authorizeRoles = (...allowedRoles: Role[]) => {
       return;
     }
 
-    if (!allowedRoles.includes(req.user.role)) {
+    const userRoles = [req.user.role, ...(req.user.secondaryRoles || [])];
+    const hasPermission = allowedRoles.some((role) => userRoles.includes(role));
+
+    if (!hasPermission) {
       res.status(403).json({
         success: false,
-        message: `Forbidden: Access denied for role '${req.user.role}'. Required roles: ${allowedRoles.join(', ')}`,
+        message: `Forbidden: Access denied for role(s) '${userRoles.join(', ')}'. Required roles: ${allowedRoles.join(', ')}`,
       });
       return;
     }
