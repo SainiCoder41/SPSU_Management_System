@@ -4,7 +4,7 @@ dotenv.config();
 export const ENV = {
   PORT: process.env.PORT || '5000',
   NODE_ENV: process.env.NODE_ENV || 'development',
-  MONGODB_URI: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/spsu_cms',
+  MONGODB_URI: process.env.MONGODB_URI || 'mongodb+srv://sainijitu057_db_user:sainijitu057_db_user@new2025.rxnpzve.mongodb.net/',
   JWT_SECRET: process.env.JWT_SECRET || 'spsu_cms_super_secret_jwt_key_2026_v1_0',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   REDIS_URL: process.env.REDIS_URL || 'redis://127.0.0.1:6379',

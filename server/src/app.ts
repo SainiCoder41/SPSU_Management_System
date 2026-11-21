@@ -1,8 +1,10 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
+import fs from 'fs';
 import { ENV } from './config/env.js';
 import routes from './routes/index.js';
 import { errorHandler } from './middlewares/error.js';
@@ -10,7 +12,11 @@ import { errorHandler } from './middlewares/error.js';
 const app: Application = express();
 
 // Security Headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Allows Vite static build assets and fonts
+  })
+);
 
 // CORS configuration for React Vite client
 app.use(
@@ -60,6 +66,24 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // Mount API routes
 app.use('/api', routes);
+
+// Serve static frontend in production or when client build is present
+const clientDistCandidates = [
+  path.resolve(process.cwd(), 'client/dist'),
+  path.resolve(process.cwd(), '../client/dist'),
+  path.resolve(__dirname, '../../client/dist'),
+];
+const clientDistPath = clientDistCandidates.find((dir) => fs.existsSync(dir));
+
+if (clientDistPath) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req: Request, res: Response, next: NextFunction) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 // Error Handling Middleware
 app.use(errorHandler);

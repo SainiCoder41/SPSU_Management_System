@@ -2,6 +2,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { Role } from '../types/index.js';
 
+export type UserRole = Role;
+export type { Role };
+
 export interface IUserDocument extends Document {
   name: string;
   email: string;
